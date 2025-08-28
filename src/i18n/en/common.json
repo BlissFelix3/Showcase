@@ -1,0 +1,34 @@
+{
+  "welcome": "Welcome to Sulhu Legal Platform",
+  "consultation": {
+    "create": "Create Consultation",
+    "status": "Status",
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "document": {
+    "generate": "Generate Document",
+    "type": "Document Type",
+    "status": "Status",
+    "draft": "Draft",
+    "generated": "Generated",
+    "signed": "Signed",
+    "archived": "Archived"
+  },
+  "case": {
+    "create": "Create Case",
+    "status": "Status",
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "completed": "Completed",
+    "closed": "Closed"
+  },
+  "payment": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  }
+}
