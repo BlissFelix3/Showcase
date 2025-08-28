@@ -5,6 +5,7 @@ import { CreateConsultationDto } from './dto/create-consultation.dto';
 import { PaymentsService } from '../payments/payments.service';
 import { ConsultationStatus } from './entities/consultation.entity';
 import { LocalEvents } from '../utils/constants';
+import { GeminiAIService, AIConsultationRequest } from './gemini-ai.service';
 
 @Injectable()
 export class AIConsultationService {
@@ -14,6 +15,7 @@ export class AIConsultationService {
     private readonly consultationRepository: ConsultationRepository,
     private readonly paymentsService: PaymentsService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly geminiAIService: GeminiAIService,
   ) {}
 
   async createConsultation(clientId: string, dto: CreateConsultationDto) {
@@ -61,25 +63,65 @@ export class AIConsultationService {
       throw new Error('Consultation must be paid before processing');
     }
 
-    // Simulate AI processing (in production, this would call actual AI service)
-    consultation.status = 'IN_PROGRESS';
-    consultation.aiAnalysis = await this.generateAIAnalysis(
-      consultation.legalProblem,
-    );
-    consultation.recommendations = await this.generateRecommendations();
-    consultation.status = 'COMPLETED';
-
-    const savedConsultation =
+    try {
+      // Update status to in progress
+      consultation.status = 'IN_PROGRESS';
       await this.consultationRepository.save(consultation);
 
-    // Emit consultation processed event for notifications
-    this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_PROCESSED, {
-      userId: consultation.client.id,
-      slug: 'consultation-processed',
-      consultation: savedConsultation,
-    });
+      // Generate AI consultation using Gemini
+      const aiRequest: AIConsultationRequest = {
+        legalProblem: consultation.legalProblem,
+        language: consultation.language || 'en',
+        context: {
+          consultationId: consultation.id,
+          clientId: consultation.client.id,
+          type: consultation.type,
+        },
+      };
 
-    return savedConsultation;
+      const aiResponse =
+        await this.geminiAIService.generateLegalConsultation(aiRequest);
+
+      // Update consultation with AI response
+      consultation.aiAnalysis = aiResponse.analysis;
+      consultation.recommendations = aiResponse.recommendations;
+      consultation.chosenOption = aiResponse.chosenOption || null;
+      consultation.aiResponse = JSON.stringify(aiResponse);
+      consultation.metadata = {
+        ...aiResponse.metadata,
+        estimatedCosts: aiResponse.estimatedCosts,
+        timeline: aiResponse.timeline,
+        nextSteps: aiResponse.nextSteps,
+      };
+      consultation.status = 'COMPLETED';
+
+      const savedConsultation =
+        await this.consultationRepository.save(consultation);
+
+      // Emit consultation processed event for notifications
+      this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_PROCESSED, {
+        userId: consultation.client.id,
+        slug: 'consultation-processed',
+        consultation: savedConsultation,
+      });
+
+      this.logger.log(`AI consultation processed successfully for ID: ${id}`);
+      return savedConsultation;
+    } catch (error) {
+      this.logger.error(`Error processing AI consultation ${id}:`, error);
+
+      // Update status to indicate failure
+      consultation.status = 'CANCELLED';
+      consultation.metadata = {
+        ...consultation.metadata,
+        error: error.message,
+        processedAt: new Date().toISOString(),
+      };
+
+      await this.consultationRepository.save(consultation);
+
+      throw new Error(`Failed to process AI consultation: ${error.message}`);
+    }
   }
 
   async updateConsultationStatus(id: string, status: ConsultationStatus) {
@@ -115,6 +157,115 @@ export class AIConsultationService {
     });
   }
 
+  async generateLegalDocument(
+    clientId: string,
+    documentType: string,
+    context: string,
+    language: string = 'en',
+  ) {
+    try {
+      const documentResponse = await this.geminiAIService.generateLegalDocument(
+        {
+          documentType,
+          context,
+          language,
+        },
+      );
+
+      return {
+        ...documentResponse,
+        metadata: {
+          clientId,
+          documentType,
+          language,
+          generatedAt: new Date().toISOString(),
+        },
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error generating legal document for client ${clientId}:`,
+        error,
+      );
+      throw new Error(`Failed to generate legal document: ${error.message}`);
+    }
+  }
+
+  async generateLawyerRecommendations(
+    clientId: string,
+    caseDetails: string,
+    jurisdiction: string,
+    practiceArea: string,
+    language: string = 'en',
+  ) {
+    try {
+      const recommendations =
+        await this.geminiAIService.generateLawyerRecommendations({
+          caseDetails,
+          jurisdiction,
+          practiceArea,
+          language,
+        });
+
+      return {
+        ...recommendations,
+        metadata: {
+          clientId,
+          jurisdiction,
+          practiceArea,
+          language,
+          generatedAt: new Date().toISOString(),
+        },
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error generating lawyer recommendations for client ${clientId}:`,
+        error,
+      );
+      throw new Error(
+        `Failed to generate lawyer recommendations: ${error.message}`,
+      );
+    }
+  }
+
+  async generateLawReports(
+    topic: string,
+    jurisdiction: string,
+    language: string = 'en',
+  ) {
+    try {
+      const reports = await this.geminiAIService.generateLawReports(
+        topic,
+        jurisdiction,
+        language,
+      );
+
+      return {
+        reports,
+        metadata: {
+          topic,
+          jurisdiction,
+          language,
+          generatedAt: new Date().toISOString(),
+        },
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error generating law reports for topic ${topic}:`,
+        error,
+      );
+      throw new Error(`Failed to generate law reports: ${error.message}`);
+    }
+  }
+
+  async checkAIServiceHealth(): Promise<boolean> {
+    try {
+      return await this.geminiAIService.healthCheck();
+    } catch (error) {
+      this.logger.error('AI service health check failed:', error);
+      return false;
+    }
+  }
+
   private calculateConsultationFee(type?: string): number {
     const fees: Record<string, number> = {
       INITIAL: 5000, // 50 NGN
@@ -123,51 +274,5 @@ export class AIConsultationService {
     };
 
     return fees[type || 'INITIAL'] || 5000;
-  }
-
-  private async generateAIAnalysis(legalProblem: string) {
-    // Simulate AI analysis (replace with actual AI service call)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return `AI Analysis of your legal problem: "${legalProblem}"
-
-Based on the information provided, this appears to be a legal matter that requires careful consideration. The AI has analyzed the key elements and identified several important factors that should be addressed.
-
-Key Points:
-- Legal jurisdiction considerations
-- Applicable laws and regulations
-- Potential legal remedies
-- Risk assessment and recommendations
-
-This analysis provides a foundation for further legal consultation and decision-making.`;
-  }
-
-  private async generateRecommendations() {
-    // Simulate AI recommendations (replace with actual AI service call)
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    return `Based on the AI analysis, here are your recommended options:
-
-1. **Mediation (Recommended)**
-   - Cost-effective and faster resolution
-   - Maintains relationships
-   - Professional mediator assistance
-
-2. **Out-of-Court Settlement**
-   - Negotiated agreement
-   - Avoids litigation costs
-   - Faster resolution than court
-
-3. **Legal Consultation**
-   - Professional legal advice
-   - Understanding of rights and options
-   - Strategic planning
-
-4. **Litigation (Last Resort)**
-   - Formal court proceedings
-   - Higher costs and longer timeline
-   - Adversarial process
-
-The AI recommends starting with mediation as it offers the best balance of cost, speed, and relationship preservation.`;
   }
 }
