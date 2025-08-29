@@ -83,26 +83,70 @@ export class PracticeAreasService {
       );
     }
 
+    // Load the lawyer profile to add to the practice area
+    const lawyerProfile = await this.practiceAreaRepository.manager
+      .getRepository('LawyerProfile')
+      .findOne({ where: { id: lawyerProfileId } });
+
+    if (!lawyerProfile) {
+      throw new NotFoundException('Lawyer profile not found');
+    }
+
     // Add lawyer to practice area
     if (!practiceArea.lawyers) {
       practiceArea.lawyers = [];
     }
 
-    // Note: This would need to be implemented with proper lawyer profile loading
-    // For now, we'll just increment the count
-    practiceArea.lawyerCount += 1;
+    // Add the lawyer profile to the practice area
+    practiceArea.lawyers.push(lawyerProfile as any);
+    practiceArea.lawyerCount = practiceArea.lawyers.length;
 
-    return this.practiceAreaRepository.save(practiceArea);
+    // Save the updated practice area
+    const updatedPracticeArea =
+      await this.practiceAreaRepository.save(practiceArea);
+
+    // Update the lawyer profile's practice areas
+    await this.practiceAreaRepository.manager
+      .getRepository('LawyerProfile')
+      .createQueryBuilder()
+      .relation('practiceAreaEntities')
+      .of(lawyerProfileId)
+      .add(practiceAreaId);
+
+    return updatedPracticeArea;
   }
 
   async removeLawyer(practiceAreaId: string, lawyerProfileId: string) {
     const practiceArea = await this.findById(practiceAreaId);
 
-    if (practiceArea.lawyerCount > 0) {
-      practiceArea.lawyerCount -= 1;
+    // Check if lawyer exists in this practice area
+    const existingLawyerIndex = practiceArea.lawyers?.findIndex(
+      (lawyer) => lawyer.id === lawyerProfileId,
+    );
+
+    if (existingLawyerIndex === -1 || existingLawyerIndex === undefined) {
+      throw new BadRequestException(
+        'Lawyer is not associated with this practice area',
+      );
     }
 
-    return this.practiceAreaRepository.save(practiceArea);
+    // Remove lawyer from practice area
+    practiceArea.lawyers.splice(existingLawyerIndex, 1);
+    practiceArea.lawyerCount = practiceArea.lawyers.length;
+
+    // Save the updated practice area
+    const updatedPracticeArea =
+      await this.practiceAreaRepository.save(practiceArea);
+
+    // Update the lawyer profile's practice areas
+    await this.practiceAreaRepository.manager
+      .getRepository('LawyerProfile')
+      .createQueryBuilder()
+      .relation('practiceAreaEntities')
+      .of(lawyerProfileId)
+      .remove(practiceAreaId);
+
+    return updatedPracticeArea;
   }
 
   async getPopularPracticeAreas(limit: number = 10) {
@@ -131,5 +175,99 @@ export class PracticeAreasService {
       })
       .orderBy('practiceArea.name', 'ASC')
       .getMany();
+  }
+
+  async getPracticeAreasByLawyerCount(minCount: number = 0, maxCount?: number) {
+    const queryBuilder = this.practiceAreaRepository
+      .createQueryBuilder('practiceArea')
+      .where('practiceArea.isActive = :isActive', { isActive: true })
+      .andWhere('practiceArea.lawyerCount >= :minCount', { minCount });
+
+    if (maxCount !== undefined) {
+      queryBuilder.andWhere('practiceArea.lawyerCount <= :maxCount', {
+        maxCount,
+      });
+    }
+
+    return queryBuilder
+      .orderBy('practiceArea.lawyerCount', 'DESC')
+      .addOrderBy('practiceArea.name', 'ASC')
+      .getMany();
+  }
+
+  async getPracticeAreasWithLawyerDetails(limit: number = 20) {
+    return this.practiceAreaRepository
+      .createQueryBuilder('practiceArea')
+      .leftJoinAndSelect('practiceArea.lawyers', 'lawyer')
+      .leftJoinAndSelect('lawyer.user', 'user')
+      .where('practiceArea.isActive = :isActive', { isActive: true })
+      .andWhere('practiceArea.lawyerCount > 0')
+      .orderBy('practiceArea.lawyerCount', 'DESC')
+      .addOrderBy('practiceArea.name', 'ASC')
+      .limit(limit)
+      .getMany();
+  }
+
+  async updatePracticeAreaStatistics(practiceAreaId: string) {
+    const practiceArea = await this.findById(practiceAreaId);
+
+    // Count active lawyers in this practice area
+    const activeLawyerCount = await this.practiceAreaRepository.manager
+      .getRepository('LawyerProfile')
+      .count({
+        where: {
+          practiceAreaEntities: { id: practiceAreaId },
+          verificationStatus: 'APPROVED',
+        },
+      });
+
+    // Update the practice area with accurate count
+    practiceArea.lawyerCount = activeLawyerCount;
+
+    return this.practiceAreaRepository.save(practiceArea);
+  }
+
+  async getPracticeAreaTrends(days: number = 30) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    return this.practiceAreaRepository
+      .createQueryBuilder('practiceArea')
+      .select([
+        'practiceArea.id',
+        'practiceArea.name',
+        'practiceArea.lawyerCount',
+        'practiceArea.category',
+      ])
+      .where('practiceArea.isActive = :isActive', { isActive: true })
+      .andWhere('practiceArea.updatedAt >= :startDate', { startDate })
+      .orderBy('practiceArea.lawyerCount', 'DESC')
+      .addOrderBy('practiceArea.updatedAt', 'DESC')
+      .getMany();
+  }
+
+  async bulkUpdatePracticeAreaCounts() {
+    const practiceAreas = await this.practiceAreaRepository.find({
+      where: { isActive: true },
+    });
+
+    const updatePromises = practiceAreas.map(async (practiceArea) => {
+      const lawyerCount = await this.practiceAreaRepository.manager
+        .getRepository('LawyerProfile')
+        .count({
+          where: {
+            practiceAreaEntities: { id: practiceArea.id },
+            verificationStatus: 'APPROVED',
+          },
+        });
+
+      if (practiceArea.lawyerCount !== lawyerCount) {
+        practiceArea.lawyerCount = lawyerCount;
+        return this.practiceAreaRepository.save(practiceArea);
+      }
+      return practiceArea;
+    });
+
+    return Promise.all(updatePromises);
   }
 }

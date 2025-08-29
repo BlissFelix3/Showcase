@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AppealRepository } from './repositories/appeal.repository';
 import { CreateAppealDto } from './dto/create-appeal.dto';
 import { AppealStatus, AppealType, Appeal } from './entities/appeal.entity';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationService } from '../notifications/notification.service';
 import { LocalEvents } from '../utils/constants';
 import { FindOptionsWhere } from 'typeorm';
 
@@ -16,7 +16,7 @@ import { FindOptionsWhere } from 'typeorm';
 export class AppealsService {
   constructor(
     private readonly appealRepository: AppealRepository,
-    private readonly notificationsService: NotificationsService,
+    private readonly notificationService: NotificationService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -166,24 +166,16 @@ export class AppealsService {
 
   private async sendReviewNotifications(appeal: Appeal) {
     try {
-      // Send notification to appellant
-      await this.notificationsService.sendPushNotification(
-        appeal.appellantId,
-        'Appeal Reviewed',
-        `Your appeal "${appeal.title}" has been ${appeal.status.toLowerCase()}`,
-      );
+      // Create notification using the available service method
+      await this.notificationService.createNotification({
+        userId: appeal.appellantId,
+        title: 'Appeal Reviewed',
+        message: `Your appeal "${appeal.title}" has been ${appeal.status.toLowerCase()}`,
 
-      // Send email notification
-      await this.notificationsService.sendEmail({
-        to: 'appellant@example.com', // Get from user service
-        subject: `Appeal ${appeal.status}`,
-        template: 'appeal-reviewed',
-        data: {
-          title: appeal.title,
+        metadata: {
+          appealId: appeal.id,
           status: appeal.status,
           decision: appeal.decision,
-          reviewNotes: appeal.reviewNotes,
-          decisionDate: new Date(appeal.decisionDate).toLocaleDateString(),
         },
       });
     } catch (error) {

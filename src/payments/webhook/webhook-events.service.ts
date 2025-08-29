@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PaymentRepository } from '../repositories/payment.repository';
-import { NotificationsService } from '../../notifications/notifications.service';
+import { NotificationService } from '../../notifications/notification.service';
+import { EmailService } from '../../email/email.service';
 
 export interface WebhookEvent {
   event: string;
@@ -27,7 +28,8 @@ export class WebhookEventsService {
 
   constructor(
     private readonly paymentRepository: PaymentRepository,
-    private readonly notificationsService: NotificationsService,
+    private readonly notificationService: NotificationService,
+    private readonly emailService: EmailService,
   ) {}
 
   async processWebhookEvent(
@@ -277,11 +279,11 @@ export class WebhookEventsService {
     email: string,
   ): Promise<void> {
     try {
-      await this.notificationsService.sendEmail({
-        to: email,
-        subject: 'Payment Successful',
-        template: 'payment-success',
-        data: {
+      await this.notificationService.createNotification({
+        userId: payment.userId || 'system',
+        title: 'Payment Successful',
+        message: `Payment of ₦${payment.amountMinor / 100} for ${payment.purpose} was successful`,
+        metadata: {
           amount: payment.amountMinor / 100,
           purpose: payment.purpose,
           date: new Date().toLocaleDateString(),
@@ -299,11 +301,11 @@ export class WebhookEventsService {
     reference: string,
   ): Promise<void> {
     try {
-      await this.notificationsService.sendEmail({
-        to: email,
-        subject: 'Payment Failed',
-        template: 'payment-failure',
-        data: {
+      await this.notificationService.createNotification({
+        userId: 'system',
+        title: 'Payment Failed',
+        message: `Payment with reference ${reference} has failed`,
+        metadata: {
           reference,
           date: new Date().toLocaleDateString(),
         },
@@ -320,14 +322,9 @@ export class WebhookEventsService {
     reference: string,
   ): Promise<void> {
     try {
-      await this.notificationsService.sendEmail({
-        to: email,
-        subject: 'Transfer Failed',
-        template: 'transfer-failure',
-        data: {
-          reference,
-          date: new Date().toLocaleDateString(),
-        },
+      await this.emailService.sendTemplatedEmail(email, 'transfer-failure', {
+        reference,
+        date: new Date().toLocaleDateString(),
       });
     } catch (error) {
       this.logger.error(
@@ -342,15 +339,10 @@ export class WebhookEventsService {
     amount: number,
   ): Promise<void> {
     try {
-      await this.notificationsService.sendEmail({
-        to: email,
-        subject: 'Refund Processed',
-        template: 'refund-processed',
-        data: {
-          reference,
-          amount: amount / 100,
-          date: new Date().toLocaleDateString(),
-        },
+      await this.emailService.sendTemplatedEmail(email, 'refund-processed', {
+        reference,
+        amount: amount / 100,
+        date: new Date().toLocaleDateString(),
       });
     } catch (error) {
       this.logger.error(`Failed to send refund notification: ${error.message}`);
@@ -362,15 +354,14 @@ export class WebhookEventsService {
     amountMinor: number,
   ): Promise<void> {
     try {
-      await this.notificationsService.sendEmail({
-        to: email,
-        subject: 'Consultation Payment Confirmed',
-        template: 'consultation-confirmed',
-        data: {
+      await this.emailService.sendTemplatedEmail(
+        email,
+        'consultation-confirmed',
+        {
           amount: amountMinor / 100,
           date: new Date().toLocaleDateString(),
         },
-      });
+      );
     } catch (error) {
       this.logger.error(
         `Failed to send consultation confirmation: ${error.message}`,
@@ -384,15 +375,10 @@ export class WebhookEventsService {
     caseId?: string,
   ): Promise<void> {
     try {
-      await this.notificationsService.sendEmail({
-        to: email,
-        subject: 'Escrow Payment Confirmed',
-        template: 'escrow-confirmed',
-        data: {
-          amount: amountMinor / 100,
-          caseId,
-          date: new Date().toLocaleDateString(),
-        },
+      await this.emailService.sendTemplatedEmail(email, 'escrow-confirmed', {
+        amount: amountMinor / 100,
+        caseId,
+        date: new Date().toLocaleDateString(),
       });
     } catch (error) {
       this.logger.error(`Failed to send escrow confirmation: ${error.message}`);

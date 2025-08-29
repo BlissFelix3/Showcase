@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NotificationsService } from './notifications.service';
-import { NotificationsController } from './notifications.controller';
 import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { NotificationEvents } from './notification.events';
@@ -19,9 +17,8 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([Notification, DeviceToken, NotificationTemplate]),
     UsersModule,
   ],
-  controllers: [NotificationsController, NotificationController],
+  controllers: [NotificationController],
   providers: [
-    NotificationsService,
     NotificationService,
     NotificationEvents,
     PushService,
@@ -30,7 +27,6 @@ import { UsersModule } from '../users/users.module';
     NotificationTemplateRepository,
   ],
   exports: [
-    NotificationsService,
     NotificationService,
     PushService,
     NotificationRepository,

@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Not, IsNull } from 'typeorm';
 import { PaymentRepository } from '../repositories/payment.repository';
-import { NotificationsService } from '../../notifications/notifications.service';
+import { NotificationService } from '../../notifications/notification.service';
+import { EmailService } from '../../email/email.service';
+import { PushService } from '../../notifications/push.service';
 import { EscrowProvider, DummyEscrowProvider } from './escrow.provider';
 import { PaymentStatus } from '../entities/payment.entity';
 
@@ -51,7 +53,9 @@ export class EscrowService {
 
   constructor(
     private readonly paymentRepository: PaymentRepository,
-    private readonly notificationsService: NotificationsService,
+    private readonly notificationService: NotificationService,
+    private readonly emailService: EmailService,
+    private readonly pushService: PushService,
   ) {}
 
   async createEscrow(request: {
@@ -324,43 +328,42 @@ export class EscrowService {
   }): Promise<void> {
     try {
       // Send notification to lawyer
-      await this.notificationsService.sendPushNotification(
-        escrowDetails.lawyerId,
-        'Escrow Created',
-        `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
-      );
+      await this.notificationService.createNotification({
+        userId: escrowDetails.lawyerId,
+        title: 'Escrow Created',
+        message: `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
+      });
 
       // Send notification to client
-      await this.notificationsService.sendPushNotification(
-        escrowDetails.clientId,
-        'Escrow Created',
-        `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
+      await this.notificationService.createNotification({
+        userId: escrowDetails.clientId,
+        title: 'Escrow Created',
+        message: `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
+      });
+
+      // Send notification to lawyer via system
+      await this.notificationService.createNotification({
+        userId: escrowDetails.lawyerId,
+        title: 'Escrow Created',
+        message: `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
+        metadata: {
+          amount: (escrowDetails.amountMinor / 100).toString(),
+          caseId: escrowDetails.caseId,
+          purpose: escrowDetails.purpose,
+          date: new Date().toLocaleDateString(),
+        },
+      });
+
+      await this.emailService.sendTemplatedEmail(
+        'client@example.com', // Get from user service
+        'escrow-created-client',
+        {
+          amount: (escrowDetails.amountMinor / 100).toString(),
+          caseId: escrowDetails.caseId,
+          purpose: escrowDetails.purpose,
+          date: new Date().toLocaleDateString(),
+        },
       );
-
-      // Send email notifications
-      await this.notificationsService.sendEmail({
-        to: 'lawyer@example.com', // Get from user service
-        subject: 'Escrow Created',
-        template: 'escrow-created',
-        data: {
-          amount: (escrowDetails.amountMinor / 100).toString(),
-          caseId: escrowDetails.caseId,
-          purpose: escrowDetails.purpose,
-          date: new Date().toLocaleDateString(),
-        },
-      });
-
-      await this.notificationsService.sendEmail({
-        to: 'client@example.com', // Get from user service
-        subject: 'Escrow Created',
-        template: 'escrow-created-client',
-        data: {
-          amount: (escrowDetails.amountMinor / 100).toString(),
-          caseId: escrowDetails.caseId,
-          purpose: escrowDetails.purpose,
-          date: new Date().toLocaleDateString(),
-        },
-      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -379,49 +382,67 @@ export class EscrowService {
 
       // Send notification to lawyer
       if (metadata.lawyerId) {
-        await this.notificationsService.sendPushNotification(
+        const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.lawyerId,
-          'Escrow Released',
-          `Escrow of ₦${escrowDetails.amountMinor / 100} released for case ${escrowDetails.caseId}`,
         );
+        if (deviceTokens.length > 0) {
+          await this.pushService.sendToToken(deviceTokens, {
+            notification: {
+              title: 'Escrow Released',
+              body: `Escrow of ₦${escrowDetails.amountMinor / 100} released for case ${escrowDetails.caseId}`,
+            },
+            data: {
+              escrowId: escrowDetails.escrowId,
+              caseId: escrowDetails.caseId,
+            },
+          });
+        }
       }
 
       // Send notification to client
       if (metadata.clientId) {
-        await this.notificationsService.sendPushNotification(
+        const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.clientId,
-          'Escrow Released',
-          `Escrow of ₦${escrowDetails.amountMinor / 100} released for case ${escrowDetails.caseId}`,
         );
+        if (deviceTokens.length > 0) {
+          await this.pushService.sendToToken(deviceTokens, {
+            notification: {
+              title: 'Escrow Released',
+              body: `Escrow of ₦${escrowDetails.amountMinor / 100} released for case ${escrowDetails.caseId}`,
+            },
+            data: {
+              escrowId: escrowDetails.escrowId,
+              caseId: escrowDetails.caseId,
+            },
+          });
+        }
       }
 
       // Send email notifications
       if (metadata.lawyerId) {
-        await this.notificationsService.sendEmail({
-          to: 'lawyer@example.com', // Get from user service
-          subject: 'Escrow Released',
-          template: 'escrow-released',
-          data: {
+        await this.emailService.sendTemplatedEmail(
+          'lawyer@example.com', // Get from user service
+          'escrow-released',
+          {
             amount: (escrowDetails.amountMinor / 100).toString(),
             caseId: escrowDetails.caseId,
             purpose: escrowDetails.metadata?.purpose || 'Unknown',
             date: new Date().toLocaleDateString(),
           },
-        });
+        );
       }
 
       if (metadata.clientId) {
-        await this.notificationsService.sendEmail({
-          to: 'client@example.com', // Get from user service
-          subject: 'Escrow Released',
-          template: 'escrow-released',
-          data: {
+        await this.emailService.sendTemplatedEmail(
+          'client@example.com', // Get from user service
+          'escrow-released',
+          {
             amount: (escrowDetails.amountMinor / 100).toString(),
             caseId: escrowDetails.caseId,
             purpose: escrowDetails.metadata?.purpose || 'Unknown',
             date: new Date().toLocaleDateString(),
           },
-        });
+        );
       }
     } catch (error) {
       const errorMessage =
@@ -446,51 +467,71 @@ export class EscrowService {
 
       // Send notification to lawyer
       if (metadata.lawyerId) {
-        await this.notificationsService.sendPushNotification(
+        const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.lawyerId,
-          'Escrow Cancelled',
-          `Escrow of ₦${escrowDetails.amountMinor / 100} cancelled for case ${escrowDetails.caseId}`,
         );
+        if (deviceTokens.length > 0) {
+          await this.pushService.sendToToken(deviceTokens, {
+            notification: {
+              title: 'Escrow Cancelled',
+              body: `Escrow of ₦${escrowDetails.amountMinor / 100} cancelled for case ${escrowDetails.caseId}`,
+            },
+            data: {
+              escrowId: escrowDetails.escrowId,
+              caseId: escrowDetails.caseId,
+              reason,
+            },
+          });
+        }
       }
 
       // Send notification to client
       if (metadata.clientId) {
-        await this.notificationsService.sendPushNotification(
+        const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.clientId,
-          'Escrow Cancelled',
-          `Escrow of ₦${escrowDetails.amountMinor / 100} cancelled for case ${escrowDetails.caseId}`,
         );
+        if (deviceTokens.length > 0) {
+          await this.pushService.sendToToken(deviceTokens, {
+            notification: {
+              title: 'Escrow Cancelled',
+              body: `Escrow of ₦${escrowDetails.amountMinor / 100} cancelled for case ${escrowDetails.caseId}`,
+            },
+            data: {
+              escrowId: escrowDetails.escrowId,
+              caseId: escrowDetails.caseId,
+              reason,
+            },
+          });
+        }
       }
 
       // Send email notifications
       if (metadata.lawyerId) {
-        await this.notificationsService.sendEmail({
-          to: 'lawyer@example.com', // Get from user service
-          subject: 'Escrow Cancelled',
-          template: 'escrow-cancelled',
-          data: {
+        await this.emailService.sendTemplatedEmail(
+          'lawyer@example.com', // Get from user service
+          'escrow-cancelled',
+          {
             amount: (escrowDetails.amountMinor / 100).toString(),
             caseId: escrowDetails.caseId,
             reason,
             cancelledBy,
             date: new Date().toLocaleDateString(),
           },
-        });
+        );
       }
 
       if (metadata.clientId) {
-        await this.notificationsService.sendEmail({
-          to: 'client@example.com', // Get from user service
-          subject: 'Escrow Cancelled',
-          template: 'escrow-cancelled',
-          data: {
+        await this.emailService.sendTemplatedEmail(
+          'client@example.com', // Get from user service
+          'escrow-cancelled',
+          {
             amount: (escrowDetails.amountMinor / 100).toString(),
             caseId: escrowDetails.caseId,
             reason,
             cancelledBy,
             date: new Date().toLocaleDateString(),
           },
-        });
+        );
       }
     } catch (error) {
       const errorMessage =

@@ -18,7 +18,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { VerificationModule } from './verification/verification.module';
 import { MediationsModule } from './mediations/mediations.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
-import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationsModule } from './notifications/notification.module';
 import { ConsultationsModule } from './consultations/consultations.module';
 import { LawReportsModule } from './law-reports/law-reports.module';
 import { TasksModule } from './tasks/tasks.module';

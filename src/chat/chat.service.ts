@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatMessageRepository } from './repositories/chat-message.repository';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationService } from '../notifications/notification.service';
 import { LocalEvents } from '../utils/constants';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ChatService {
 
   constructor(
     private readonly chatMessageRepository: ChatMessageRepository,
-    private readonly notificationsService: NotificationsService,
+    private readonly notificationService: NotificationService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -28,11 +28,11 @@ export class ChatService {
     const savedMessage = await this.chatMessageRepository.save(message);
 
     // Send notification to recipient
-    await this.notificationsService.sendPushNotification(
-      createMessageDto.recipientId,
-      'New Message',
-      `New message from ${senderId}`,
-    );
+    await this.notificationService.createNotification({
+      userId: createMessageDto.recipientId,
+      title: 'New Message',
+      message: `New message from ${senderId}`,
+    });
 
     // Emit new message event for notifications
     this.eventEmitter.emit(LocalEvents.CHAT_MESSAGE_RECEIVED, {

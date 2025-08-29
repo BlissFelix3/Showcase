@@ -7,7 +7,7 @@ import { WebhookEventsService } from './webhook/webhook-events.service';
 import { EscrowService } from './escrow/escrow.service';
 import { PaymentRepository } from './repositories/payment.repository';
 import { UsersModule } from '../users/users.module';
-import { NotificationsModule } from '../notifications/notifications.module';
+import { NotificationsModule } from '../notifications/notification.module';
 
 @Module({
   imports: [UsersModule, NotificationsModule],

@@ -6,9 +6,13 @@ import {
   ManyToMany,
   JoinTable,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
 import { PracticeArea } from '../../practice-areas/entities/practice-area.entity';
+// Forward references to avoid circular dependencies
 
 @Entity({ name: 'lawyer_profiles' })
 export class LawyerProfile {
@@ -59,4 +63,61 @@ export class LawyerProfile {
 
   @Column({ type: 'decimal', precision: 11, scale: 8, nullable: true })
   longitude!: number | null;
+
+  @Column({ type: 'text', nullable: true })
+  bio!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  experience!: string | null;
+
+  @Column({ type: 'int', default: 0 })
+  yearsOfExperience!: number;
+
+  @Column({ type: 'text', nullable: true })
+  education!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  specializations!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  languages!: string | null;
+
+  @Column({ type: 'boolean', default: false })
+  isAvailable!: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  availabilityNotes!: string | null;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  hourlyRate!: number | null;
+
+  @Column({ type: 'text', nullable: true })
+  feeStructure!: string | null;
+
+  @Column({ type: 'int', default: 0 })
+  totalCases!: number;
+
+  @Column({ type: 'int', default: 0 })
+  successfulCases!: number;
+
+  @Column({ type: 'text', nullable: true })
+  verificationNotes!: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  verifiedAt!: Date | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  verifiedBy!: string | null;
+
+  @OneToMany('LawyerReview', 'lawyerProfile')
+  reviews!: any[];
+
+  @OneToMany('VerificationDocument', 'lawyerProfile')
+  verificationDocuments!: any[];
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }

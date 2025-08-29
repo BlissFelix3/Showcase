@@ -11,14 +11,14 @@ import {
   AppointmentStatus,
   AppointmentType,
 } from './entities/appointment.entity';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationService } from '../notifications/notification.service';
 import { LocalEvents } from '../utils/constants';
 
 @Injectable()
 export class AppointmentsService {
   constructor(
     private readonly appointmentRepository: AppointmentRepository,
-    private readonly notificationsService: NotificationsService,
+    private readonly notificationService: NotificationService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -189,29 +189,17 @@ export class AppointmentsService {
   private async sendAppointmentNotifications(appointment: any) {
     try {
       // Send notification to lawyer
-      await this.notificationsService.sendPushNotification(
-        appointment.lawyerId,
-        'New Appointment Scheduled',
-        `You have a new appointment scheduled for ${new Date(appointment.scheduledAt).toLocaleDateString()}`,
-      );
+      await this.notificationService.createNotification({
+        userId: appointment.lawyerId,
+        title: 'New Appointment Scheduled',
+        message: `You have a new appointment scheduled for ${new Date(appointment.scheduledAt).toLocaleDateString()}`,
+      });
 
       // Send notification to client
-      await this.notificationsService.sendPushNotification(
-        appointment.clientId,
-        'Appointment Confirmed',
-        `Your appointment has been scheduled for ${new Date(appointment.scheduledAt).toLocaleDateString()}`,
-      );
-
-      // Send email notifications
-      await this.notificationsService.sendEmail({
-        to: 'lawyer@example.com', // Get from user service
-        subject: 'New Appointment Scheduled',
-        template: 'appointment-scheduled',
-        data: {
-          clientName: appointment.client?.name || 'Client',
-          scheduledAt: new Date(appointment.scheduledAt).toLocaleDateString(),
-          type: appointment.type,
-        },
+      await this.notificationService.createNotification({
+        userId: appointment.clientId,
+        title: 'Appointment Confirmed',
+        message: `Your appointment has been scheduled for ${new Date(appointment.scheduledAt).toLocaleDateString()}`,
       });
     } catch (error) {
       // Log error but don't fail the appointment creation

@@ -21,7 +21,6 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LocalEvents } from 'src/utils/constants';
 import { PushService } from './push.service';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
-import { NotificationsService } from './notifications.service';
 
 @Injectable()
 export class NotificationService {
@@ -32,7 +31,6 @@ export class NotificationService {
     private readonly userService: UsersService,
     private readonly eventEmitter: EventEmitter2,
     private readonly pushService: PushService,
-    private readonly legacyNotificationsService: NotificationsService,
   ) {}
 
   async createNotification(data: ICreateNotification) {

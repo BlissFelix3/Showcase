@@ -8,14 +8,14 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientBriefRepository } from './repositories/client-brief.repository';
 import { CreateClientBriefDto } from './dto/create-client-brief.dto';
 import { BriefStatus, BriefPriority } from './entities/client-brief.entity';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationService } from '../notifications/notification.service';
 import { LocalEvents } from '../utils/constants';
 
 @Injectable()
 export class ClientBriefsService {
   constructor(
     private readonly clientBriefRepository: ClientBriefRepository,
-    private readonly notificationsService: NotificationsService,
+    private readonly notificationService: NotificationService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -238,19 +238,19 @@ export class ClientBriefsService {
     try {
       // Send notification to assigned lawyer
       if (clientBrief.assignedLawyerId) {
-        await this.notificationsService.sendPushNotification(
-          clientBrief.assignedLawyerId,
-          'New Brief Assigned',
-          `You have been assigned to handle: ${clientBrief.title}`,
-        );
+        await this.notificationService.createNotification({
+          userId: clientBrief.assignedLawyerId,
+          title: 'New Brief Assigned',
+          message: `You have been assigned to handle: ${clientBrief.title}`,
+        });
       }
 
       // Send notification to client
-      await this.notificationsService.sendPushNotification(
-        clientBrief.clientId,
-        'Lawyer Assigned',
-        `A lawyer has been assigned to handle your brief: ${clientBrief.title}`,
-      );
+      await this.notificationService.createNotification({
+        userId: clientBrief.clientId,
+        title: 'Lawyer Assigned',
+        message: `A lawyer has been assigned to handle your brief: ${clientBrief.title}`,
+      });
     } catch (error) {
       console.error('Failed to send assignment notifications:', error);
     }
