@@ -37,3 +37,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 .qodo
 .npmrc
+
+# Uploads
+/uploads
