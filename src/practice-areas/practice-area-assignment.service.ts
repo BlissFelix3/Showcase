@@ -60,13 +60,6 @@ export class PracticeAreaAssignmentService {
       `Practice areas assigned to lawyer ${lawyerProfileId}: ${practiceAreaIds.join(', ')}`,
     );
 
-    this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
-      lawyerId: lawyerProfileId,
-      practiceAreaIds,
-      previousPracticeAreas:
-        lawyerProfile.practiceAreaEntities?.map((pa) => pa.id) || [],
-    });
-
     return updatedProfile;
   }
 
@@ -107,13 +100,6 @@ export class PracticeAreaAssignmentService {
     this.logger.log(
       `Practice area ${practiceAreaId} removed from lawyer ${lawyerProfileId}`,
     );
-
-    this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
-      lawyerId: lawyerProfileId,
-      practiceAreaIds:
-        updatedProfile.practiceAreaEntities?.map((pa) => pa.id) || [],
-      removedPracticeAreaId: practiceAreaId,
-    });
 
     return updatedProfile;
   }

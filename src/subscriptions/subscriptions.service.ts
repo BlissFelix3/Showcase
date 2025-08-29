@@ -24,12 +24,6 @@ export class SubscriptionsService {
 
     const savedSubscription = await this.subscriptionRepo.save(entity);
 
-    this.eventEmitter.emit(LocalEvents.SUBSCRIPTION_ACTIVATED, {
-      userId: lawyerUserId,
-      slug: 'subscription-activated',
-      subscription: savedSubscription,
-    });
-
     return savedSubscription;
   }
 }

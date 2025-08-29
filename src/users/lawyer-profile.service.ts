@@ -193,12 +193,6 @@ export class LawyerProfileService {
 
     this.logger.log(`Verification document uploaded: ${savedDocument.id}`);
 
-    this.eventEmitter.emit(LocalEvents.VERIFICATION_DOCUMENT_UPLOADED, {
-      lawyerId,
-      documentId: savedDocument.id,
-      documentType: uploadData.documentType,
-    });
-
     return savedDocument;
   }
 
@@ -246,13 +240,6 @@ export class LawyerProfileService {
     this.logger.log(
       `Review created for lawyer ${lawyerId} by client ${clientId}`,
     );
-
-    this.eventEmitter.emit(LocalEvents.LAWYER_REVIEW_CREATED, {
-      lawyerId,
-      clientId,
-      reviewId: savedReview.id,
-      rating: reviewData.rating,
-    });
 
     return savedReview;
   }
@@ -346,13 +333,6 @@ export class LawyerProfileService {
     this.logger.log(
       `Lawyer ${lawyerId} verification status updated to ${verificationData.action} by admin ${adminId}`,
     );
-
-    this.eventEmitter.emit(LocalEvents.LAWYER_VERIFICATION_STATUS_CHANGED, {
-      lawyerId,
-      status: verificationData.action,
-      adminId,
-      notes: verificationData.verificationNotes,
-    });
 
     return updatedProfile;
   }
@@ -496,13 +476,6 @@ export class LawyerProfileService {
       `Practice areas assigned to lawyer ${lawyerId}: ${practiceAreaIds.join(', ')}`,
     );
 
-    this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
-      lawyerId,
-      practiceAreaIds,
-      previousPracticeAreas:
-        lawyerProfile.practiceAreaEntities?.map((pa) => pa.id) || [],
-    });
-
     return updatedProfile;
   }
 
@@ -537,13 +510,6 @@ export class LawyerProfileService {
     this.logger.log(
       `Practice area ${practiceAreaId} removed from lawyer ${lawyerId}`,
     );
-
-    this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
-      lawyerId,
-      practiceAreaIds:
-        updatedProfile.practiceAreaEntities?.map((pa) => pa.id) || [],
-      removedPracticeAreaId: practiceAreaId,
-    });
 
     return updatedProfile;
   }

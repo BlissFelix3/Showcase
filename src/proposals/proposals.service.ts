@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { ProposalRepository } from './repositories/proposal.repository';
 import { SubmitProposalDto } from './dto/submit-proposal.dto';
 import { Proposal } from './entities/proposal.entity';
@@ -17,7 +17,6 @@ export class ProposalsService {
     private readonly proposalRepository: ProposalRepository,
     private readonly caseRepository: CaseRepository,
     private readonly paymentsService: PaymentsService,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async submit(
@@ -32,12 +31,6 @@ export class ProposalsService {
     });
 
     const savedProposal = await this.proposalRepository.save(proposal);
-
-    this.eventEmitter.emit(LocalEvents.PROPOSAL_SUBMITTED, {
-      userId: lawyerId,
-      slug: 'proposal-submitted',
-      proposal: savedProposal,
-    });
 
     return savedProposal;
   }
@@ -64,18 +57,6 @@ export class ProposalsService {
       purpose: 'escrow_full_fee',
       lawyerId: proposal.lawyer.id,
       clientId: proposal.caseEntity.client.id,
-    });
-
-    this.eventEmitter.emit(LocalEvents.PROPOSAL_ACCEPTED, {
-      userId: proposal.lawyer.id,
-      slug: 'proposal-accepted',
-      proposal: saved,
-    });
-
-    this.eventEmitter.emit(LocalEvents.CASE_ASSIGNED, {
-      userId: proposal.caseEntity.client.id,
-      slug: 'case-assigned',
-      caseData: proposal.caseEntity,
     });
 
     return saved;

@@ -33,12 +33,6 @@ export class ChatService {
       message: `New message from ${senderId}`,
     });
 
-    this.eventEmitter.emit(LocalEvents.CHAT_MESSAGE_RECEIVED, {
-      userId: createMessageDto.recipientId,
-      slug: 'chat-message-received',
-      message: savedMessage,
-    });
-
     return savedMessage;
   }
 

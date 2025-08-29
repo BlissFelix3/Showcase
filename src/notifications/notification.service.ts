@@ -46,11 +46,6 @@ export class NotificationService {
       metadata: data.metadata ? JSON.stringify(data.metadata) : undefined,
     });
 
-    this.eventEmitter.emit(LocalEvents.NOTIFICATION_CREATED, {
-      notification,
-      user,
-    });
-
     return notification;
   }
 

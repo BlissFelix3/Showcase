@@ -47,12 +47,6 @@ export class ClientBriefsService {
 
     const savedBrief = await this.clientBriefRepository.save(clientBrief);
 
-    this.eventEmitter.emit(LocalEvents.CLIENT_BRIEF_PUBLISHED, {
-      userId: clientId,
-      slug: 'brief-published',
-      brief: savedBrief,
-    });
-
     return savedBrief;
   }
 
@@ -70,12 +64,6 @@ export class ClientBriefsService {
     const savedBrief = await this.clientBriefRepository.save(clientBrief);
 
     await this.sendAssignmentNotifications(savedBrief);
-
-    this.eventEmitter.emit(LocalEvents.CLIENT_BRIEF_ASSIGNED, {
-      userId: lawyerId,
-      slug: 'brief-assigned',
-      brief: savedBrief,
-    });
 
     return savedBrief;
   }

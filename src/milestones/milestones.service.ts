@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { MilestoneRepository } from './repositories/milestone.repository';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { PaymentsService } from '../payments/payments.service';
@@ -15,7 +15,6 @@ export class MilestonesService {
   constructor(
     private readonly milestoneRepository: MilestoneRepository,
     private readonly paymentsService: PaymentsService,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(createMilestoneDto: CreateMilestoneDto, caseId: string) {
@@ -26,12 +25,6 @@ export class MilestonesService {
     });
 
     const savedMilestone = await this.milestoneRepository.save(milestone);
-
-    this.eventEmitter.emit(LocalEvents.MILESTONE_CREATED, {
-      userId: savedMilestone.caseEntity.client.id,
-      slug: 'milestone-created',
-      milestone: savedMilestone,
-    });
 
     return savedMilestone;
   }
@@ -83,12 +76,6 @@ export class MilestonesService {
 
     milestone.status = 'COMPLETED';
     const savedMilestone = await this.milestoneRepository.save(milestone);
-
-    this.eventEmitter.emit(LocalEvents.MILESTONE_COMPLETED, {
-      userId: milestone.caseEntity.client.id,
-      slug: 'milestone-completed',
-      milestone: savedMilestone,
-    });
 
     return savedMilestone;
   }

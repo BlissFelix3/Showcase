@@ -32,12 +32,6 @@ export class ComplaintsService {
 
     const savedComplaint = await this.complaintRepository.save(entity);
 
-    this.eventEmitter.emit(LocalEvents.COMPLAINT_SUBMITTED, {
-      userId: createComplaintDto.respondentId,
-      slug: 'complaint-submitted',
-      complaint: savedComplaint,
-    });
-
     return savedComplaint;
   }
 
@@ -83,12 +77,6 @@ export class ComplaintsService {
     complaint.resolutionDate = new Date();
 
     const savedComplaint = await this.complaintRepository.save(complaint);
-
-    this.eventEmitter.emit(LocalEvents.COMPLAINT_RESOLVED, {
-      userId: complaint.complainant.id,
-      slug: 'complaint-resolved',
-      complaint: savedComplaint,
-    });
 
     return savedComplaint;
   }

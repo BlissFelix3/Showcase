@@ -42,12 +42,6 @@ export class DocumentsService {
     saved.paymentReference = payment.providerRef;
     const finalDocument = await this.documentRepository.save(saved);
 
-    this.eventEmitter.emit(LocalEvents.DOCUMENT_GENERATION_REQUESTED, {
-      userId: clientId,
-      slug: 'document-generation-requested',
-      document: finalDocument,
-    });
-
     return finalDocument;
   }
 
@@ -66,12 +60,6 @@ export class DocumentsService {
     document.fileName = `${document.title}_${Date.now()}.docx`;
 
     const savedDocument = await this.documentRepository.save(document);
-
-    this.eventEmitter.emit(LocalEvents.DOCUMENT_GENERATED, {
-      userId: document.client.id,
-      slug: 'document-generated',
-      document: savedDocument,
-    });
 
     return savedDocument;
   }

@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { LessThan, In } from 'typeorm';
 import { TaskRepository } from './repositories/task.repository';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -11,10 +11,7 @@ import { LocalEvents } from '../utils/constants';
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
 
-  constructor(
-    private readonly taskRepository: TaskRepository,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async create(createTaskDto: CreateTaskDto, assignedToId: string) {
     const task = this.taskRepository.create({
@@ -29,12 +26,6 @@ export class TasksService {
     });
 
     const savedTask = await this.taskRepository.save(task);
-
-    this.eventEmitter.emit(LocalEvents.TASK_ASSIGNED, {
-      userId: assignedToId,
-      slug: 'task-assigned',
-      task: savedTask,
-    });
 
     return savedTask;
   }
@@ -98,11 +89,6 @@ export class TasksService {
     const savedTask = await this.taskRepository.save(task);
 
     if (status === 'COMPLETED') {
-      this.eventEmitter.emit(LocalEvents.TASK_COMPLETED, {
-        userId: task.assignedTo.id,
-        slug: 'task-completed',
-        task: savedTask,
-      });
     }
 
     return savedTask;

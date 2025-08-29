@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { ConsultationRepository } from './repositories/consultation.repository';
 import { CreateConsultationDto } from './dto/create-consultation.dto';
 import { PaymentsService } from '../payments/payments.service';
@@ -14,7 +14,6 @@ export class AIConsultationService {
   constructor(
     private readonly consultationRepository: ConsultationRepository,
     private readonly paymentsService: PaymentsService,
-    private readonly eventEmitter: EventEmitter2,
     private readonly geminiAIService: GeminiAIService,
   ) {}
 
@@ -36,12 +35,6 @@ export class AIConsultationService {
 
     saved.paymentReference = payment.providerRef;
     const finalConsultation = await this.consultationRepository.save(saved);
-
-    this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_CREATED, {
-      userId: clientId,
-      slug: 'consultation-created',
-      consultation: finalConsultation,
-    });
 
     return finalConsultation;
   }
@@ -91,12 +84,6 @@ export class AIConsultationService {
 
       const savedConsultation =
         await this.consultationRepository.save(consultation);
-
-      this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_PROCESSED, {
-        userId: consultation.client.id,
-        slug: 'consultation-processed',
-        consultation: savedConsultation,
-      });
 
       this.logger.log(`AI consultation processed successfully for ID: ${id}`);
       return savedConsultation;

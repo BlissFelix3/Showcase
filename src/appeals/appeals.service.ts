@@ -33,12 +33,6 @@ export class AppealsService {
 
     const savedAppeal = await this.appealRepository.save(appeal);
 
-    this.eventEmitter.emit(LocalEvents.APPEAL_SUBMITTED, {
-      userId: appellantId,
-      slug: 'appeal-submitted',
-      appeal: savedAppeal,
-    });
-
     return savedAppeal;
   }
 
@@ -70,12 +64,6 @@ export class AppealsService {
     const savedAppeal = await this.appealRepository.save(appeal);
 
     await this.sendReviewNotifications(savedAppeal);
-
-    this.eventEmitter.emit(LocalEvents.APPEAL_REVIEWED, {
-      userId: appeal.appellantId,
-      slug: 'appeal-reviewed',
-      appeal: savedAppeal,
-    });
 
     return savedAppeal;
   }

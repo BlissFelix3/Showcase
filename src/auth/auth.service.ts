@@ -52,7 +52,7 @@ export class AuthService {
 
       const token = this.jwtService.sign({ sub: user.id, role: user.role });
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_WELCOME, {
+      this.eventEmitter.emit(LocalEvents.USER_WELCOME, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -98,7 +98,7 @@ export class AuthService {
 
       const token = this.jwtService.sign({ sub: user.id, role: user.role });
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_LOGIN_SUCCESS, {
+      this.eventEmitter.emit(LocalEvents.USER_LOGIN_SUCCESS, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -144,7 +144,7 @@ export class AuthService {
         throw new NotFoundException('Account with email does not exist');
       }
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_FORGOT_PASSWORD, {
+      this.eventEmitter.emit(LocalEvents.FORGOT_PASSWORD_REQUESTED, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -172,7 +172,7 @@ export class AuthService {
 
       await this.usersService.updatePassword(user.id, hashedPassword);
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_PASSWORD_RESET, {
+      this.eventEmitter.emit(LocalEvents.PASSWORD_RESET_SUCCESSFUL, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -196,7 +196,7 @@ export class AuthService {
         throw new NotFoundException('Account with email does not exist');
       }
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_VERIFICATION, {
+      this.eventEmitter.emit(LocalEvents.VERIFICATION_EMAIL_SENT, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -219,7 +219,7 @@ export class AuthService {
 
       await this.usersService.markEmailVerified(userId);
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_VERIFIED, {
+      this.eventEmitter.emit(LocalEvents.VERIFICATION_EMAIL_CONFIRMED, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -245,7 +245,7 @@ export class AuthService {
 
       const otpCode = await this.otpService.generateOTP(phone);
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_PHONE_VERIFICATION, {
+      this.eventEmitter.emit(LocalEvents.VERIFICATION_PHONE_SENT, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -281,7 +281,7 @@ export class AuthService {
 
       await this.usersService.markPhoneVerified(user.id);
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_PHONE_VERIFIED, {
+      this.eventEmitter.emit(LocalEvents.VERIFICATION_PHONE_CONFIRMED, {
         userId: user.id,
         email: user.email,
         userData: {
@@ -355,7 +355,7 @@ export class AuthService {
 
       await this.usersService.updatePassword(user.id, hashedPassword);
 
-      this.eventEmitter.emit(LocalEvents.EMAIL_PASSWORD_CHANGED, {
+      this.eventEmitter.emit(LocalEvents.USER_PASSWORD_CHANGED, {
         userId: user.id,
         email: user.email,
         userData: {

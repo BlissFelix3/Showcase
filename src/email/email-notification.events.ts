@@ -7,7 +7,7 @@ import { LocalEvents } from '../utils/constants';
 export class EmailNotificationEvents {
   constructor(private readonly emailService: EmailService) {}
 
-  @OnEvent(LocalEvents.EMAIL_WELCOME)
+  @OnEvent(LocalEvents.USER_WELCOME)
   async handleWelcomeEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -23,7 +23,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_FORGOT_PASSWORD)
+  @OnEvent(LocalEvents.FORGOT_PASSWORD_REQUESTED)
   async handleForgotPasswordEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -38,7 +38,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_PASSWORD_RESET)
+  @OnEvent(LocalEvents.PASSWORD_RESET_SUCCESSFUL)
   async handlePasswordResetEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -53,7 +53,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_VERIFICATION)
+  @OnEvent(LocalEvents.VERIFICATION_EMAIL_SENT)
   async handleEmailVerification(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -68,7 +68,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_VERIFIED)
+  @OnEvent(LocalEvents.VERIFICATION_EMAIL_CONFIRMED)
   async handleEmailVerified(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -83,7 +83,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_PHONE_VERIFICATION)
+  @OnEvent(LocalEvents.VERIFICATION_PHONE_SENT)
   async handlePhoneVerificationEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -99,7 +99,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_PHONE_VERIFIED)
+  @OnEvent(LocalEvents.VERIFICATION_PHONE_CONFIRMED)
   async handlePhoneVerifiedEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -114,7 +114,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_LOGIN_SUCCESS)
+  @OnEvent(LocalEvents.USER_LOGIN_SUCCESS)
   async handleLoginSuccessEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -129,7 +129,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_PASSWORD_CHANGED)
+  @OnEvent(LocalEvents.USER_PASSWORD_CHANGED)
   async handlePasswordChangedEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -144,7 +144,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_ACCOUNT_DEACTIVATED)
+  @OnEvent(LocalEvents.USER_ACCOUNT_DEACTIVATED)
   async handleAccountDeactivatedEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -159,7 +159,7 @@ export class EmailNotificationEvents {
     }
   }
 
-  @OnEvent(LocalEvents.EMAIL_ACCOUNT_REACTIVATED)
+  @OnEvent(LocalEvents.USER_ACCOUNT_REACTIVATED)
   async handleAccountReactivatedEmail(payload: any) {
     try {
       await this.emailService.sendTemplatedEmail(
@@ -171,6 +171,59 @@ export class EmailNotificationEvents {
       );
     } catch (error) {
       console.error('Failed to send account reactivated email:', error);
+    }
+  }
+
+  @OnEvent(LocalEvents.VERIFICATION_DOCUMENT_UPLOADED)
+  async handleVerificationDocumentUploaded(payload: any) {
+    try {
+      await this.emailService.sendTemplatedEmail(
+        'admin@lawent.com',
+        'verification-request-template',
+        {
+          lawyerName: payload.lawyerName,
+          lawyerEmail: payload.lawyerEmail,
+          documentCount: payload.documentCount,
+          submittedAt: payload.submittedAt,
+        },
+      );
+    } catch (error) {
+      console.error('Failed to send verification request email:', error);
+    }
+  }
+
+  @OnEvent(LocalEvents.USER_VERIFICATION_SUCCESSFUL)
+  async handleVerificationSuccessful(payload: any) {
+    try {
+      await this.emailService.sendTemplatedEmail(
+        payload.email,
+        'verification-successful-template',
+        {
+          fullName: payload.userData.fullName,
+          verificationDate: payload.userData.verificationDate,
+          verifiedBy: payload.userData.verifiedBy,
+        },
+      );
+    } catch (error) {
+      console.error('Failed to send verification successful email:', error);
+    }
+  }
+
+  @OnEvent(LocalEvents.USER_VERIFICATION_REJECTED)
+  async handleVerificationRejected(payload: any) {
+    try {
+      await this.emailService.sendTemplatedEmail(
+        payload.email,
+        'verification-rejected-template',
+        {
+          fullName: payload.userData.fullName,
+          rejectionReason: payload.userData.rejectionReason,
+          requiredActions: payload.userData.requiredActions,
+          rejectedAt: payload.userData.rejectedAt,
+        },
+      );
+    } catch (error) {
+      console.error('Failed to send verification rejected email:', error);
     }
   }
 }

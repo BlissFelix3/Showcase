@@ -4,7 +4,7 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { AppointmentRepository } from './repositories/appointment.repository';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import {
@@ -19,7 +19,6 @@ export class AppointmentsService {
   constructor(
     private readonly appointmentRepository: AppointmentRepository,
     private readonly notificationService: NotificationService,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(createAppointmentDto: CreateAppointmentDto) {
@@ -47,12 +46,6 @@ export class AppointmentsService {
 
     await this.sendAppointmentNotifications(savedAppointment);
 
-    this.eventEmitter.emit(LocalEvents.APPOINTMENT_SCHEDULED, {
-      userId: savedAppointment.clientId,
-      slug: 'appointment-scheduled',
-      appointment: savedAppointment,
-    });
-
     return savedAppointment;
   }
 
@@ -74,12 +67,6 @@ export class AppointmentsService {
 
     appointment.status = AppointmentStatus.CONFIRMED;
     const savedAppointment = await this.appointmentRepository.save(appointment);
-
-    this.eventEmitter.emit(LocalEvents.APPOINTMENT_CONFIRMED, {
-      userId: savedAppointment.clientId,
-      slug: 'appointment-confirmed',
-      appointment: savedAppointment,
-    });
 
     return savedAppointment;
   }
@@ -112,12 +99,6 @@ export class AppointmentsService {
     appointment.status = AppointmentStatus.CANCELLED;
     appointment.cancellationReason = reason;
     const savedAppointment = await this.appointmentRepository.save(appointment);
-
-    this.eventEmitter.emit(LocalEvents.APPOINTMENT_CANCELLED, {
-      userId: savedAppointment.clientId,
-      slug: 'appointment-cancelled',
-      appointment: savedAppointment,
-    });
 
     return savedAppointment;
   }

@@ -33,12 +33,6 @@ export class MediationsService {
 
     this.mediations.set(mediation.id, mediation);
 
-    this.eventEmitter.emit(LocalEvents.MEDIATION_REQUESTED, {
-      userId: mediatorId,
-      slug: 'mediation-requested',
-      mediation,
-    });
-
     return mediation;
   }
 
@@ -88,12 +82,6 @@ export class MediationsService {
     this.schedule(mediationId, reminderDate, 'Mediation session reminder');
 
     this.mediations.set(mediationId, mediation);
-
-    this.eventEmitter.emit(LocalEvents.MEDIATION_SCHEDULED, {
-      userId: mediation.initiatorId,
-      slug: 'mediation-scheduled',
-      mediation,
-    });
 
     return mediation;
   }

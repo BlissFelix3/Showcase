@@ -56,15 +56,6 @@ export class PaymentsService {
       if (payment) {
         payment.status = 'COMPLETED';
         const savedPayment = await this.paymentRepository.save(payment);
-
-        this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_PAYMENT_CONFIRMED, {
-          userId: 'client-id',
-          slug: 'consultation-payment-confirmed',
-          consultation: {
-            id: 'consultation-id',
-            amountMinor: savedPayment.amountMinor,
-          },
-        });
       }
     }
 

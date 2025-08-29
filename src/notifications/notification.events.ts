@@ -359,4 +359,56 @@ export class NotificationEvents {
       });
     }
   }
+
+  @OnEvent(LocalEvents.VERIFICATION_DOCUMENT_UPLOADED)
+  async handleVerificationDocumentUploaded(payload: any) {
+    const { lawyerId, lawyerName, lawyerEmail, documentCount } = payload;
+
+    // Send push notification to admin about new verification request
+    await this.notificationService.sendNotificationWithTemplate({
+      userId: 'admin', // This should be configured based on your admin system
+      templateSlug: 'verification-request',
+      data: {
+        lawyerId,
+        lawyerName,
+        lawyerEmail,
+        documentCount,
+        imageUrl: '/images/verification-icon.png',
+      },
+    });
+  }
+
+  @OnEvent(LocalEvents.USER_VERIFICATION_SUCCESSFUL)
+  async handleVerificationSuccessful(payload: any) {
+    const { email, userData } = payload;
+
+    // Send push notification to lawyer about successful verification
+    await this.notificationService.sendNotificationWithTemplate({
+      userId: userData.lawyerId, // We need the actual user ID, not email
+      templateSlug: 'verification-successful',
+      data: {
+        fullName: userData.fullName,
+        verificationDate: userData.verificationDate,
+        verifiedBy: userData.verifiedBy,
+        imageUrl: '/images/verification-success.png',
+      },
+    });
+  }
+
+  @OnEvent(LocalEvents.USER_VERIFICATION_REJECTED)
+  async handleVerificationRejected(payload: any) {
+    const { email, userData } = payload;
+
+    // Send push notification to lawyer about rejected verification
+    await this.notificationService.sendNotificationWithTemplate({
+      userId: userData.lawyerId, // We need the actual user ID, not email
+      templateSlug: 'verification-rejected',
+      data: {
+        fullName: userData.fullName,
+        rejectionReason: userData.rejectionReason,
+        requiredActions: userData.requiredActions,
+        imageUrl: '/images/verification-rejected.png',
+      },
+    });
+  }
 }

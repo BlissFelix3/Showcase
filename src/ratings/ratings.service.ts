@@ -1,15 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { RatingRepository } from './repositories/rating.repository';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { LocalEvents } from '../utils/constants';
 
 @Injectable()
 export class RatingsService {
-  constructor(
-    private readonly ratingRepository: RatingRepository,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly ratingRepository: RatingRepository) {}
 
   async create(createRatingDto: CreateRatingDto, userId: string) {
     const raterRef = { id: userId };
@@ -36,12 +33,6 @@ export class RatingsService {
     });
 
     const savedRating = await this.ratingRepository.save(rating);
-
-    this.eventEmitter.emit(LocalEvents.RATING_RECEIVED, {
-      userId: createRatingDto.ratedId,
-      slug: 'rating-received',
-      rating: savedRating,
-    });
 
     return savedRating;
   }
