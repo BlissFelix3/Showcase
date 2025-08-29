@@ -57,16 +57,16 @@ export class ClientBrief {
   priority: BriefPriority;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  jurisdiction: string; // City/State for location-based matching
+  jurisdiction: string;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  budgetRangeMin: number; // Minimum budget in NGN
+  budgetRangeMin: number;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  budgetRangeMax: number; // Maximum budget in NGN
+  budgetRangeMax: number;
 
   @Column({ type: 'varchar', length: 50, default: 'en' })
-  language: string; // Client's preferred language
+  language: string;
 
   @Column({ type: 'datetime', nullable: true })
   deadline: Date;
@@ -84,7 +84,7 @@ export class ClientBrief {
   assignedLawyerId: string;
 
   @Column({ type: 'text', nullable: true })
-  adminNotes: string; // For admin use
+  adminNotes: string;
 
   @Column({ type: 'boolean', default: false })
   isUrgent: boolean;

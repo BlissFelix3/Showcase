@@ -48,7 +48,6 @@ export class GeolocationController {
     const lngNum = Number(lng);
     const r = Number(radiusKm);
 
-    // Validate coordinates
     if (isNaN(latNum) || isNaN(lngNum) || isNaN(r)) {
       throw new Error('Invalid coordinates or radius provided');
     }
@@ -80,7 +79,7 @@ export class GeolocationController {
         id: lawyer.id,
         name: lawyer.fullName,
         practiceAreas: lawyer.practiceAreas,
-        experience: 'N/A', // yearsOfExperience not in current entity
+        experience: 'N/A',
         rating: lawyer.ratingAverage,
         distance: this.calculateDistance(
           latNum,
@@ -107,6 +106,6 @@ export class GeolocationController {
         Math.cos((lat2 * Math.PI) / 180) *
         Math.sin(dLng / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return Math.round(6371 * c * 100) / 100; // Round to 2 decimal places
+    return Math.round(6371 * c * 100) / 100;
   }
 }

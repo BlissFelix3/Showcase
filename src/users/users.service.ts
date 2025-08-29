@@ -28,7 +28,6 @@ export class UsersService {
     });
     if (existing) throw new ConflictException('Email already registered');
 
-    // Create user
     const user = this.userRepository.create({
       email: userData.email,
       passwordHash: userData.passwordHash,
@@ -36,7 +35,6 @@ export class UsersService {
     });
     await this.userRepository.save(user);
 
-    // Create profile based on role
     if (userData.role === 'LAWYER') {
       const lawyer = this.lawyerRepo.create({
         user,
@@ -89,7 +87,6 @@ export class UsersService {
   }
 
   async findByPhone(phone: string): Promise<User | null> {
-    // Search in both lawyer and client profiles
     const lawyerProfile = await this.lawyerRepo.findOne({
       where: { phone },
       relations: ['user'],
@@ -114,7 +111,6 @@ export class UsersService {
   async markEmailVerified(userId: string): Promise<void> {
     const user = await this.findByIdOrFail(userId);
 
-    // Update user with email verification status
     await this.userRepository
       .createQueryBuilder()
       .update(User)
@@ -129,7 +125,6 @@ export class UsersService {
   async markPhoneVerified(userId: string): Promise<void> {
     const user = await this.findByIdOrFail(userId);
 
-    // Update user with phone verification status
     await this.userRepository
       .createQueryBuilder()
       .update(User)

@@ -36,7 +36,7 @@ export interface ReleaseEscrowRequest {
   escrowId: string;
   reason: string;
   releasedBy: string;
-  amountMinor?: number; // Partial release amount
+  amountMinor?: number;
 }
 
 export interface EscrowResponse {
@@ -78,7 +78,6 @@ export class EscrowService {
         },
       );
 
-      // Create payment record
       const payment = this.paymentRepository.create({
         caseEntity: { id: request.caseId },
         milestone: request.milestoneId ? { id: request.milestoneId } : null,
@@ -92,7 +91,6 @@ export class EscrowService {
 
       const savedPayment = await this.paymentRepository.save(payment);
 
-      // Send notifications
       await this.sendEscrowCreatedNotifications(request);
 
       return {
@@ -118,20 +116,17 @@ export class EscrowService {
     try {
       this.logger.log(`Releasing escrow: ${escrowId}, reason: ${reason}`);
 
-      // Get escrow details
       const escrowDetails = await this.getEscrowDetails(escrowId);
       if (!escrowDetails) {
         throw new Error('Escrow not found');
       }
 
-      // Release escrow with provider
       const result = await this.escrowProvider.releaseEscrow(
         escrowId,
         amountMinor,
       );
 
       if (result.released) {
-        // Update payment status
         const payment = await this.paymentRepository.findOne({
           where: { escrowId },
         });
@@ -141,7 +136,6 @@ export class EscrowService {
           await this.paymentRepository.save(payment);
         }
 
-        // Send notifications
         await this.sendEscrowReleasedNotifications(escrowDetails);
 
         return {
@@ -172,7 +166,6 @@ export class EscrowService {
         return null;
       }
 
-      // Get escrow status from provider
       const escrowStatus = await this.escrowProvider.getEscrowStatus(escrowId);
 
       return {
@@ -183,7 +176,7 @@ export class EscrowService {
         createdAt: payment.createdAt,
         expiresAt: new Date(
           payment.createdAt.getTime() + 365 * 24 * 60 * 60 * 1000,
-        ), // 1 year from creation
+        ),
         metadata: {
           milestoneId: payment.milestone?.id,
           purpose: payment.purpose,
@@ -234,11 +227,9 @@ export class EscrowService {
     try {
       this.logger.log(`Cancelling escrow: ${escrowId}, reason: ${reason}`);
 
-      // Cancel escrow with provider
       const result = await this.escrowProvider.cancelEscrow(escrowId);
 
       if (result.cancelled) {
-        // Update payment status
         const payment = await this.paymentRepository.findOne({
           where: { escrowId },
         });
@@ -248,7 +239,6 @@ export class EscrowService {
           await this.paymentRepository.save(payment);
         }
 
-        // Send notifications
         await this.sendEscrowCancelledNotifications(
           escrowId,
           reason,
@@ -327,21 +317,18 @@ export class EscrowService {
     clientId: string;
   }): Promise<void> {
     try {
-      // Send notification to lawyer
       await this.notificationService.createNotification({
         userId: escrowDetails.lawyerId,
         title: 'Escrow Created',
         message: `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
       });
 
-      // Send notification to client
       await this.notificationService.createNotification({
         userId: escrowDetails.clientId,
         title: 'Escrow Created',
         message: `Escrow of ₦${escrowDetails.amountMinor / 100} created for case ${escrowDetails.caseId}`,
       });
 
-      // Send notification to lawyer via system
       await this.notificationService.createNotification({
         userId: escrowDetails.lawyerId,
         title: 'Escrow Created',
@@ -355,7 +342,7 @@ export class EscrowService {
       });
 
       await this.emailService.sendTemplatedEmail(
-        'client@example.com', // Get from user service
+        'client@example.com',
         'escrow-created-client',
         {
           amount: (escrowDetails.amountMinor / 100).toString(),
@@ -380,7 +367,6 @@ export class EscrowService {
       const metadata = escrowDetails.metadata;
       if (!metadata) return;
 
-      // Send notification to lawyer
       if (metadata.lawyerId) {
         const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.lawyerId,
@@ -399,7 +385,6 @@ export class EscrowService {
         }
       }
 
-      // Send notification to client
       if (metadata.clientId) {
         const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.clientId,
@@ -418,10 +403,9 @@ export class EscrowService {
         }
       }
 
-      // Send email notifications
       if (metadata.lawyerId) {
         await this.emailService.sendTemplatedEmail(
-          'lawyer@example.com', // Get from user service
+          'lawyer@example.com',
           'escrow-released',
           {
             amount: (escrowDetails.amountMinor / 100).toString(),
@@ -434,7 +418,7 @@ export class EscrowService {
 
       if (metadata.clientId) {
         await this.emailService.sendTemplatedEmail(
-          'client@example.com', // Get from user service
+          'client@example.com',
           'escrow-released',
           {
             amount: (escrowDetails.amountMinor / 100).toString(),
@@ -465,7 +449,6 @@ export class EscrowService {
       const metadata = escrowDetails.metadata;
       if (!metadata) return;
 
-      // Send notification to lawyer
       if (metadata.lawyerId) {
         const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.lawyerId,
@@ -485,7 +468,6 @@ export class EscrowService {
         }
       }
 
-      // Send notification to client
       if (metadata.clientId) {
         const deviceTokens = await this.notificationService.getUserDeviceTokens(
           metadata.clientId,
@@ -505,10 +487,9 @@ export class EscrowService {
         }
       }
 
-      // Send email notifications
       if (metadata.lawyerId) {
         await this.emailService.sendTemplatedEmail(
-          'lawyer@example.com', // Get from user service
+          'lawyer@example.com',
           'escrow-cancelled',
           {
             amount: (escrowDetails.amountMinor / 100).toString(),
@@ -522,7 +503,7 @@ export class EscrowService {
 
       if (metadata.clientId) {
         await this.emailService.sendTemplatedEmail(
-          'client@example.com', // Get from user service
+          'client@example.com',
           'escrow-cancelled',
           {
             amount: (escrowDetails.amountMinor / 100).toString(),

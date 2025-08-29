@@ -33,7 +33,6 @@ export class MediationsService {
 
     this.mediations.set(mediation.id, mediation);
 
-    // Emit mediation initiated event for notifications
     this.eventEmitter.emit(LocalEvents.MEDIATION_REQUESTED, {
       userId: mediatorId,
       slug: 'mediation-requested',
@@ -83,7 +82,6 @@ export class MediationsService {
     mediation.status = 'SCHEDULED';
     mediation.updatedAt = new Date();
 
-    // Schedule reminder for 24 hours before
     const reminderDate = new Date(mediation.scheduledDate);
     reminderDate.setHours(reminderDate.getHours() - 24);
 
@@ -91,7 +89,6 @@ export class MediationsService {
 
     this.mediations.set(mediationId, mediation);
 
-    // Emit mediation scheduled event for notifications
     this.eventEmitter.emit(LocalEvents.MEDIATION_SCHEDULED, {
       userId: mediation.initiatorId,
       slug: 'mediation-scheduled',
@@ -152,20 +149,7 @@ export class MediationsService {
         return;
       }
 
-      // TODO: Integrate with NotificationsService to send SMS, email, WhatsApp
-      // For now, just log the reminder
       console.log(`Mediation reminder for ${mediationId}: ${message}`);
-
-      // In production, this would call:
-      // await this.notificationsService.sendEmail({
-      //   to: userEmail,
-      //   subject: 'Mediation Reminder',
-      //   template: 'mediation-reminder',
-      //   data: { mediationId, message, scheduledDate: mediation.scheduledDate }
-      // });
-
-      // await this.notificationsService.sendSms(userPhone, message);
-      // await this.notificationsService.sendWhatsapp(userPhone, message);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';

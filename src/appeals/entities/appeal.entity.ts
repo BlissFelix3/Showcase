@@ -31,7 +31,7 @@ export class Appeal {
   id: string;
 
   @Column({ type: 'uuid' })
-  appellantId: string; // Usually the lawyer
+  appellantId: string;
 
   @Column({ type: 'uuid', nullable: true })
   caseId: string;
@@ -49,13 +49,13 @@ export class Appeal {
   description: string;
 
   @Column({ type: 'text', nullable: true })
-  evidence: string | null; // URLs to supporting documents
+  evidence: string | null;
 
   @Column({ type: 'text', nullable: true })
   adminNotes: string;
 
   @Column({ type: 'uuid', nullable: true })
-  reviewedBy: string; // Admin who reviewed the appeal
+  reviewedBy: string;
 
   @Column({ type: 'datetime', nullable: true })
   reviewedAt: Date;

@@ -35,9 +35,8 @@ export class PaymentsService {
 
     const savedPayment = await this.paymentRepository.save(payment);
 
-    // Initialize Paystack payment
     const paystackResponse = await this.paystackService.initTransaction(
-      'client@example.com', // Get from user service
+      'client@example.com',
       amountMinor,
       savedPayment.id,
     );
@@ -58,12 +57,11 @@ export class PaymentsService {
         payment.status = 'COMPLETED';
         const savedPayment = await this.paymentRepository.save(payment);
 
-        // Emit consultation payment confirmed event for notifications
         this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_PAYMENT_CONFIRMED, {
-          userId: 'client-id', // Get from payment context
+          userId: 'client-id',
           slug: 'consultation-payment-confirmed',
           consultation: {
-            id: 'consultation-id', // Get from payment context
+            id: 'consultation-id',
             amountMinor: savedPayment.amountMinor,
           },
         });

@@ -1,4 +1,3 @@
-// Entities are auto-loaded via patterns below
 import { DataSource, DataSourceOptions } from 'typeorm';
 import config from '.';
 import * as dotenv from 'dotenv';
@@ -33,7 +32,7 @@ const baseOptions = {
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   subscribers: [],
   logging: process.env.NODE_ENV === 'dev' ? ['query', 'error'] : false,
-  synchronize: process.env.NODE_ENV === 'dev', // Only in development
+  synchronize: process.env.NODE_ENV === 'dev',
   dropSchema: false,
 };
 

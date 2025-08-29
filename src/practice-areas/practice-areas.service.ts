@@ -73,7 +73,6 @@ export class PracticeAreasService {
   async addLawyer(practiceAreaId: string, lawyerProfileId: string) {
     const practiceArea = await this.findById(practiceAreaId);
 
-    // Check if lawyer is already added
     const existingLawyer = practiceArea.lawyers?.find(
       (lawyer) => lawyer.id === lawyerProfileId,
     );
@@ -83,7 +82,6 @@ export class PracticeAreasService {
       );
     }
 
-    // Load the lawyer profile to add to the practice area
     const lawyerProfile = await this.practiceAreaRepository.manager
       .getRepository('LawyerProfile')
       .findOne({ where: { id: lawyerProfileId } });
@@ -92,20 +90,16 @@ export class PracticeAreasService {
       throw new NotFoundException('Lawyer profile not found');
     }
 
-    // Add lawyer to practice area
     if (!practiceArea.lawyers) {
       practiceArea.lawyers = [];
     }
 
-    // Add the lawyer profile to the practice area
     practiceArea.lawyers.push(lawyerProfile as any);
     practiceArea.lawyerCount = practiceArea.lawyers.length;
 
-    // Save the updated practice area
     const updatedPracticeArea =
       await this.practiceAreaRepository.save(practiceArea);
 
-    // Update the lawyer profile's practice areas
     await this.practiceAreaRepository.manager
       .getRepository('LawyerProfile')
       .createQueryBuilder()
@@ -119,7 +113,6 @@ export class PracticeAreasService {
   async removeLawyer(practiceAreaId: string, lawyerProfileId: string) {
     const practiceArea = await this.findById(practiceAreaId);
 
-    // Check if lawyer exists in this practice area
     const existingLawyerIndex = practiceArea.lawyers?.findIndex(
       (lawyer) => lawyer.id === lawyerProfileId,
     );
@@ -130,15 +123,12 @@ export class PracticeAreasService {
       );
     }
 
-    // Remove lawyer from practice area
     practiceArea.lawyers.splice(existingLawyerIndex, 1);
     practiceArea.lawyerCount = practiceArea.lawyers.length;
 
-    // Save the updated practice area
     const updatedPracticeArea =
       await this.practiceAreaRepository.save(practiceArea);
 
-    // Update the lawyer profile's practice areas
     await this.practiceAreaRepository.manager
       .getRepository('LawyerProfile')
       .createQueryBuilder()
@@ -211,7 +201,6 @@ export class PracticeAreasService {
   async updatePracticeAreaStatistics(practiceAreaId: string) {
     const practiceArea = await this.findById(practiceAreaId);
 
-    // Count active lawyers in this practice area
     const activeLawyerCount = await this.practiceAreaRepository.manager
       .getRepository('LawyerProfile')
       .count({
@@ -221,7 +210,6 @@ export class PracticeAreasService {
         },
       });
 
-    // Update the practice area with accurate count
     practiceArea.lawyerCount = activeLawyerCount;
 
     return this.practiceAreaRepository.save(practiceArea);

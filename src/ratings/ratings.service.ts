@@ -37,7 +37,6 @@ export class RatingsService {
 
     const savedRating = await this.ratingRepository.save(rating);
 
-    // Emit rating received event for notifications
     this.eventEmitter.emit(LocalEvents.RATING_RECEIVED, {
       userId: createRatingDto.ratedId,
       slug: 'rating-received',

@@ -82,7 +82,6 @@ export class GeminiAIService {
         `Generating legal consultation for language: ${request.language}`,
       );
 
-      // Generate legal analysis
       const analysisPrompt = consultationPrompts.analysisPrompt(
         request.legalProblem,
         request.language,
@@ -91,7 +90,6 @@ export class GeminiAIService {
       const analysisResult = await this.generateContent(analysisPrompt);
       const analysis = this.extractAnalysis(analysisResult);
 
-      // Generate recommendations based on analysis
       const recommendationsPrompt = consultationPrompts.recommendationsPrompt(
         analysis,
         request.language,
@@ -104,7 +102,6 @@ export class GeminiAIService {
         recommendationsResult,
       );
 
-      // Extract additional information
       const chosenOption = this.extractChosenOption(recommendationsResult);
       const estimatedCosts = this.extractEstimatedCosts(recommendationsResult);
       const timeline = this.extractTimeline(recommendationsResult);
@@ -249,9 +246,7 @@ Respond in ${language} language.
     }
   }
 
-  // Content extraction methods
   private extractAnalysis(content: string): string {
-    // Extract the analysis section from AI response
     const analysisMatch = content.match(
       /ANALYSIS:(.*?)(?=RECOMMENDATIONS:|$)/s,
     );
@@ -259,7 +254,6 @@ Respond in ${language} language.
       return analysisMatch[1].trim();
     }
 
-    // Fallback: return first few paragraphs
     const paragraphs = content
       .split('\n\n')
       .filter((p) => p.trim().length > 50);
@@ -267,7 +261,6 @@ Respond in ${language} language.
   }
 
   private extractRecommendations(content: string): string {
-    // Extract recommendations section
     const recommendationsMatch = content.match(
       /RECOMMENDATIONS:(.*?)(?=NEXT STEPS:|$)/s,
     );
@@ -275,7 +268,6 @@ Respond in ${language} language.
       return recommendationsMatch[1].trim();
     }
 
-    // Fallback: return content after "Based on the analysis"
     const basedOnMatch = content.match(/Based on.*?analysis(.*)/s);
     if (basedOnMatch) {
       return basedOnMatch[1].trim();
@@ -336,7 +328,6 @@ Respond in ${language} language.
   }
 
   private extractDocument(content: string): string {
-    // Extract the main document content
     const documentMatch = content.match(/DOCUMENT:(.*?)(?=INSTRUCTIONS:|$)/s);
     if (documentMatch) {
       return documentMatch[1].trim();
@@ -451,7 +442,6 @@ Respond in ${language} language.
     return match ? match[1].trim() : '';
   }
 
-  // Health check method
   async healthCheck(): Promise<boolean> {
     try {
       const result = await this.generateContent(

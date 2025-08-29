@@ -32,7 +32,6 @@ export class ComplaintsService {
 
     const savedComplaint = await this.complaintRepository.save(entity);
 
-    // Emit complaint submitted event for notifications
     this.eventEmitter.emit(LocalEvents.COMPLAINT_SUBMITTED, {
       userId: createComplaintDto.respondentId,
       slug: 'complaint-submitted',
@@ -85,7 +84,6 @@ export class ComplaintsService {
 
     const savedComplaint = await this.complaintRepository.save(complaint);
 
-    // Emit complaint resolved event for notifications
     this.eventEmitter.emit(LocalEvents.COMPLAINT_RESOLVED, {
       userId: complaint.complainant.id,
       slug: 'complaint-resolved',

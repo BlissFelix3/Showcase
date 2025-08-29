@@ -27,14 +27,12 @@ export class ChatService {
 
     const savedMessage = await this.chatMessageRepository.save(message);
 
-    // Send notification to recipient
     await this.notificationService.createNotification({
       userId: createMessageDto.recipientId,
       title: 'New Message',
       message: `New message from ${senderId}`,
     });
 
-    // Emit new message event for notifications
     this.eventEmitter.emit(LocalEvents.CHAT_MESSAGE_RECEIVED, {
       userId: createMessageDto.recipientId,
       slug: 'chat-message-received',
@@ -119,8 +117,7 @@ export class ChatService {
     question: string,
     caseId?: string,
   ) {
-    // Simulate AI legal consultation
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate processing time
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const response = `AI Legal Consultation Response:
     
@@ -171,7 +168,6 @@ Case ID: ${caseId || 'Not specified'}`;
       this.getUnreadCount(userId),
     ]);
 
-    // Count unique conversations
     const conversations = await this.chatMessageRepository
       .createQueryBuilder('message')
       .select(

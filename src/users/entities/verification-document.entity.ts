@@ -7,7 +7,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// Forward reference to avoid circular dependency
 
 export enum DocumentType {
   CALL_TO_BAR_CERTIFICATE = 'CALL_TO_BAR_CERTIFICATE',
@@ -77,7 +76,7 @@ export class VerificationDocument {
   rejectionReason!: string | null;
 
   @Column({ type: 'text', nullable: true })
-  documentNumber!: string | null; // For certificates, IDs, etc.
+  documentNumber!: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   issueDate!: Date | null;
@@ -89,10 +88,10 @@ export class VerificationDocument {
   issuingAuthority!: string | null;
 
   @Column({ type: 'boolean', default: false })
-  isPrimary!: boolean; // Whether this is the primary document for this type
+  isPrimary!: boolean;
 
   @Column({ type: 'text', nullable: true })
-  metadata!: string | null; // JSON string for additional data
+  metadata!: string | null;
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -30,7 +30,6 @@ export class TasksService {
 
     const savedTask = await this.taskRepository.save(task);
 
-    // Emit task assigned event for notifications
     this.eventEmitter.emit(LocalEvents.TASK_ASSIGNED, {
       userId: assignedToId,
       slug: 'task-assigned',
@@ -98,7 +97,6 @@ export class TasksService {
 
     const savedTask = await this.taskRepository.save(task);
 
-    // Emit task completed event for notifications
     if (status === 'COMPLETED') {
       this.eventEmitter.emit(LocalEvents.TASK_COMPLETED, {
         userId: task.assignedTo.id,

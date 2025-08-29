@@ -1,6 +1,4 @@
-// Notification Event Constants for Sulhu Platform
 export const LocalEvents = {
-  // Email Notification Events
   EMAIL_WELCOME: 'email.welcome',
   EMAIL_FORGOT_PASSWORD: 'email.forgot-password',
   EMAIL_PASSWORD_RESET: 'email.password-reset',
@@ -13,7 +11,6 @@ export const LocalEvents = {
   EMAIL_ACCOUNT_DEACTIVATED: 'email.account-deactivated',
   EMAIL_ACCOUNT_REACTIVATED: 'email.account-reactivated',
 
-  // Push Notification Events
   PUSH_WELCOME: 'push.welcome',
   PUSH_FORGOT_PASSWORD: 'push.forgot-password',
   PUSH_PASSWORD_RESET: 'push.password-reset',
@@ -26,7 +23,6 @@ export const LocalEvents = {
   PUSH_ACCOUNT_DEACTIVATED: 'push.account-deactivated',
   PUSH_ACCOUNT_REACTIVATED: 'push.account-reactivated',
 
-  // Business Logic Events (for other services)
   USER_REGISTRATION_SUCCESSFUL: 'user.registration.successful',
   USER_VERIFICATION_SUCCESSFUL: 'user.verification.successful',
   USER_VERIFICATION_REJECTED: 'user.verification.rejected',
@@ -94,91 +90,72 @@ export const LocalEvents = {
   NOTIFICATION_CREATED: 'notification.created',
 } as const;
 
-// Notification Template Slugs
 export const NotificationSlugs = {
-  // User Management
   REGISTRATION_SUCCESSFUL: 'registration-successful',
   VERIFICATION_SUCCESSFUL: 'verification-successful',
   VERIFICATION_REJECTED: 'verification-rejected',
   LAWYER_PROFILE_VERIFIED: 'lawyer-profile-verified',
   LAWYER_PROFILE_REJECTED: 'lawyer-profile-rejected',
 
-  // AI Consultation
   CONSULTATION_CREATED: 'consultation-created',
   CONSULTATION_PROCESSED: 'consultation-processed',
   CONSULTATION_PAYMENT_CONFIRMED: 'consultation-payment-confirmed',
 
-  // Case Management
   CASE_CREATED: 'case-created',
   CASE_ASSIGNED: 'case-assigned',
   CASE_STATUS_UPDATED: 'case-status-updated',
   CASE_COMPLETED: 'case-completed',
   CASE_SUSPENDED: 'case-suspended',
 
-  // Proposals
   PROPOSAL_SUBMITTED: 'proposal-submitted',
   PROPOSAL_ACCEPTED: 'proposal-accepted',
   PROPOSAL_REJECTED: 'proposal-rejected',
 
-  // Milestones
   MILESTONE_CREATED: 'milestone-created',
   MILESTONE_COMPLETED: 'milestone-completed',
   MILESTONE_PAYMENT_DUE: 'milestone-payment-due',
 
-  // Payments
   PAYMENT_SUCCESSFUL: 'payment-successful',
   PAYMENT_FAILED: 'payment-failed',
   ESCROW_CREATED: 'escrow-created',
   ESCROW_RELEASED: 'escrow-released',
 
-  // Documents
   DOCUMENT_GENERATED: 'document-generated',
   DOCUMENT_READY: 'document-ready',
 
-  // Tasks
   TASK_ASSIGNED: 'task-assigned',
   TASK_COMPLETED: 'task-completed',
   TASK_OVERDUE: 'task-overdue',
   TASK_REMINDER: 'task-reminder',
 
-  // Appointments
   APPOINTMENT_SCHEDULED: 'appointment-scheduled',
   APPOINTMENT_CONFIRMED: 'appointment-confirmed',
   APPOINTMENT_CANCELLED: 'appointment-cancelled',
   APPOINTMENT_REMINDER: 'appointment-reminder',
 
-  // Ratings
   RATING_RECEIVED: 'rating-received',
 
-  // Complaints
   COMPLAINT_SUBMITTED: 'complaint-submitted',
   COMPLAINT_RESOLVED: 'complaint-resolved',
 
-  // Appeals
   APPEAL_SUBMITTED: 'appeal-submitted',
   APPEAL_DECISION: 'appeal-decision',
 
-  // Subscriptions
   SUBSCRIPTION_ACTIVATED: 'subscription-activated',
   SUBSCRIPTION_EXPIRED: 'subscription-expired',
 
-  // Client Briefs
   BRIEF_PUBLISHED: 'brief-published',
   BRIEF_ASSIGNED: 'brief-assigned',
 
-  // Mediation
   MEDIATION_REQUESTED: 'mediation-requested',
   MEDIATION_SCHEDULED: 'mediation-scheduled',
 
-  // Chat
   NEW_MESSAGE: 'new-message',
 
-  // System
   MAINTENANCE_NOTICE: 'maintenance-notice',
   SECURITY_ALERT: 'security-alert',
 } as const;
 
-// Notification Types
 export const NotificationTypes = {
   EMAIL: 'email',
   SMS: 'sms',
@@ -187,7 +164,6 @@ export const NotificationTypes = {
   IN_APP: 'in_app',
 } as const;
 
-// Notification Priorities
 export const NotificationPriorities = {
   LOW: 'low',
   MEDIUM: 'medium',
@@ -195,7 +171,6 @@ export const NotificationPriorities = {
   URGENT: 'urgent',
 } as const;
 
-// Notification Categories
 export const NotificationCategories = {
   SYSTEM: 'system',
   PAYMENT: 'payment',

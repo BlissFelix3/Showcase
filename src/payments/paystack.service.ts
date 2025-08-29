@@ -27,7 +27,7 @@ interface PaystackVerifyResponse {
 
 @Injectable()
 export class PaystackService {
-  private readonly baseUrl = 'https://api.paystack.co';
+  private readonly baseUrl = 'https:
   private readonly secretKey = appConfig.paystack.key;
 
   async initTransaction(email: string, amountMinor: number, reference: string) {

@@ -29,7 +29,7 @@ export class CreateAppointmentDto {
 
   @IsInt()
   @Min(15)
-  @Max(480) // Max 8 hours
+  @Max(480)
   @IsOptional()
   durationMinutes?: number;
 

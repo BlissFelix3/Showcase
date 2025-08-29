@@ -29,17 +29,14 @@ export class AIConsultationService {
 
     const saved = await this.consultationRepository.save(consultation);
 
-    // Create payment for consultation
     const payment = await this.paymentsService.createConsultationPayment(
       clientId,
       saved.amountMinor,
     );
 
-    // Update consultation with payment reference
     saved.paymentReference = payment.providerRef;
     const finalConsultation = await this.consultationRepository.save(saved);
 
-    // Emit consultation created event for notifications
     this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_CREATED, {
       userId: clientId,
       slug: 'consultation-created',
@@ -64,11 +61,9 @@ export class AIConsultationService {
     }
 
     try {
-      // Update status to in progress
       consultation.status = 'IN_PROGRESS';
       await this.consultationRepository.save(consultation);
 
-      // Generate AI consultation using Gemini
       const aiRequest: AIConsultationRequest = {
         legalProblem: consultation.legalProblem,
         language: consultation.language || 'en',
@@ -82,7 +77,6 @@ export class AIConsultationService {
       const aiResponse =
         await this.geminiAIService.generateLegalConsultation(aiRequest);
 
-      // Update consultation with AI response
       consultation.aiAnalysis = aiResponse.analysis;
       consultation.recommendations = aiResponse.recommendations;
       consultation.chosenOption = aiResponse.chosenOption || null;
@@ -98,7 +92,6 @@ export class AIConsultationService {
       const savedConsultation =
         await this.consultationRepository.save(consultation);
 
-      // Emit consultation processed event for notifications
       this.eventEmitter.emit(LocalEvents.AI_CONSULTATION_PROCESSED, {
         userId: consultation.client.id,
         slug: 'consultation-processed',
@@ -110,7 +103,6 @@ export class AIConsultationService {
     } catch (error) {
       this.logger.error(`Error processing AI consultation ${id}:`, error);
 
-      // Update status to indicate failure
       consultation.status = 'CANCELLED';
       consultation.metadata = {
         ...consultation.metadata,
@@ -268,9 +260,9 @@ export class AIConsultationService {
 
   private calculateConsultationFee(type?: string): number {
     const fees: Record<string, number> = {
-      INITIAL: 5000, // 50 NGN
-      FOLLOW_UP: 3000, // 30 NGN
-      SPECIALIST: 10000, // 100 NGN
+      INITIAL: 5000,
+      FOLLOW_UP: 3000,
+      SPECIALIST: 10000,
     };
 
     return fees[type || 'INITIAL'] || 5000;

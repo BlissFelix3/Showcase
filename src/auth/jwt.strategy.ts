@@ -31,12 +31,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     payload: JwtPayload,
   ): Promise<{ userId: string; role: string }> {
     try {
-      // Simple validation - in production, you might want to check against a database
       if (!payload.sub || !payload.role) {
         throw new UnauthorizedException('Invalid token payload');
       }
 
-      // Simulate async validation
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       return { userId: payload.sub, role: payload.role };

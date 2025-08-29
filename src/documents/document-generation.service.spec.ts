@@ -226,7 +226,6 @@ describe('DocumentGenerationService', () => {
     it('should throw error for missing required fields in sale agreement', async () => {
       const templateData: DocumentTemplateData = {
         partyAName: 'John Doe',
-        // Missing required fields: partyBName, propertyDescription, amount
       };
 
       await expect(
@@ -240,7 +239,6 @@ describe('DocumentGenerationService', () => {
       const templateData: DocumentTemplateData = {
         partyAName: 'Landlord',
         partyBName: 'Tenant',
-        // Missing required fields: propertyDescription, amount, duration
       };
 
       await expect(

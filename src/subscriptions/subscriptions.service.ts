@@ -24,7 +24,6 @@ export class SubscriptionsService {
 
     const savedSubscription = await this.subscriptionRepo.save(entity);
 
-    // Emit subscription activated event for notifications
     this.eventEmitter.emit(LocalEvents.SUBSCRIPTION_ACTIVATED, {
       userId: lawyerUserId,
       slug: 'subscription-activated',

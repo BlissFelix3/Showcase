@@ -54,7 +54,7 @@ export class Appointment {
   @Column({ type: 'datetime' })
   scheduledAt: Date;
 
-  @Column({ type: 'int', default: 60 }) // Duration in minutes
+  @Column({ type: 'int', default: 60 })
   durationMinutes: number;
 
   @Column({ type: 'text', nullable: true })
@@ -64,13 +64,13 @@ export class Appointment {
   cancellationReason: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  meetingLink: string; // For virtual meetings
+  meetingLink: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  location: string; // For physical meetings
+  location: string;
 
   @Column({ type: 'varchar', length: 50, default: 'en' })
-  language: string; // Client's preferred language
+  language: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'lawyerId' })

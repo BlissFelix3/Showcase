@@ -34,17 +34,14 @@ export class DocumentsService {
 
     const saved = await this.documentRepository.save(document);
 
-    // Create payment for document generation
     const payment = await this.paymentsService.createConsultationPayment(
       clientId,
       saved.amountMinor,
     );
 
-    // Update document with payment reference
     saved.paymentReference = payment.providerRef;
     const finalDocument = await this.documentRepository.save(saved);
 
-    // Emit document created event for notifications
     this.eventEmitter.emit(LocalEvents.DOCUMENT_GENERATION_REQUESTED, {
       userId: clientId,
       slug: 'document-generation-requested',
@@ -61,7 +58,6 @@ export class DocumentsService {
       throw new Error('Document must be paid before generation');
     }
 
-    // Generate document content based on type and template data
     document.generatedContent = await this.generateDocumentContent(
       document.type,
       document.templateData,
@@ -71,7 +67,6 @@ export class DocumentsService {
 
     const savedDocument = await this.documentRepository.save(document);
 
-    // Emit document generated event for notifications
     this.eventEmitter.emit(LocalEvents.DOCUMENT_GENERATED, {
       userId: document.client.id,
       slug: 'document-generated',
@@ -123,15 +118,15 @@ export class DocumentsService {
 
   private calculateDocumentFee(type: DocumentType): number {
     const fees: Record<DocumentType, number> = {
-      SALE_AGREEMENT: 10000, // 100 NGN
-      RENT_AGREEMENT: 8000, // 80 NGN
-      QUIT_NOTICE: 5000, // 50 NGN
-      CONTRACT: 15000, // 150 NGN
-      LEGAL_LETTER: 3000, // 30 NGN
-      AFFIDAVIT: 5000, // 50 NGN
-      POWER_OF_ATTORNEY: 12000, // 120 NGN
-      WILL: 20000, // 200 NGN
-      CUSTOM: 25000, // 250 NGN
+      SALE_AGREEMENT: 10000,
+      RENT_AGREEMENT: 8000,
+      QUIT_NOTICE: 5000,
+      CONTRACT: 15000,
+      LEGAL_LETTER: 3000,
+      AFFIDAVIT: 5000,
+      POWER_OF_ATTORNEY: 12000,
+      WILL: 20000,
+      CUSTOM: 25000,
     };
 
     return fees[type] || 10000;
@@ -141,7 +136,6 @@ export class DocumentsService {
     type: DocumentType,
     templateData: Record<string, any>,
   ) {
-    // Use the actual document generation service
     const generatedDocument =
       await this.documentGenerationService.generateDocument(
         type,

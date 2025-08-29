@@ -171,7 +171,6 @@ export class NotificationController {
   @ApiOperation({ summary: 'Get all notification templates' })
   @ApiResponse({ status: 200, description: 'Templates retrieved successfully' })
   async getAllTemplates() {
-    // This would need to be implemented in the service
     return { message: 'Get all templates - to be implemented' };
   }
 

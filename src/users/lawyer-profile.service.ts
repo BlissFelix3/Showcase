@@ -71,7 +71,6 @@ export class LawyerProfileService {
       throw new ForbiddenException('Lawyer profile not yet verified');
     }
 
-    // Filter out sensitive information
     const publicProfile = {
       ...profile,
       verificationDocuments: undefined,
@@ -88,7 +87,6 @@ export class LawyerProfileService {
   ) {
     const profile = await this.getLawyerProfile(lawyerId);
 
-    // Update basic profile information
     if (updateData.fullName) profile.fullName = updateData.fullName;
     if (updateData.phone) profile.phone = updateData.phone;
     if (updateData.linkedinUrl) profile.linkedinUrl = updateData.linkedinUrl;
@@ -114,11 +112,9 @@ export class LawyerProfileService {
     if (updateData.longitude !== undefined)
       profile.longitude = updateData.longitude;
 
-    // Update practice areas if provided
     if (updateData.practiceAreas) {
       const practiceAreaIds = updateData.practiceAreas.map((pa) => pa.id);
 
-      // Validate practice area assignment
       const validation = await this.validatePracticeAreaAssignment(
         lawyerId,
         practiceAreaIds,
@@ -136,7 +132,6 @@ export class LawyerProfileService {
         );
       }
 
-      // Assign practice areas
       await this.assignPracticeAreasToLawyer(lawyerId, practiceAreaIds);
     }
 
@@ -246,14 +241,12 @@ export class LawyerProfileService {
 
     const savedReview = await this.lawyerReviewRepository.save(review);
 
-    // Update lawyer's average rating
     await this.updateLawyerRating(lawyerId);
 
     this.logger.log(
       `Review created for lawyer ${lawyerId} by client ${clientId}`,
     );
 
-    // Emit review created event
     this.eventEmitter.emit(LocalEvents.LAWYER_REVIEW_CREATED, {
       lawyerId,
       clientId,
@@ -312,7 +305,6 @@ export class LawyerProfileService {
     const profile = await this.getLawyerProfile(lawyerId);
 
     if (verificationData.action === VerificationAction.APPROVE) {
-      // Check if all required documents are uploaded and approved
       const requiredDocuments = [
         DocumentType.CALL_TO_BAR_CERTIFICATE,
         DocumentType.NATIONAL_ID,
@@ -355,7 +347,6 @@ export class LawyerProfileService {
       `Lawyer ${lawyerId} verification status updated to ${verificationData.action} by admin ${adminId}`,
     );
 
-    // Emit verification status changed event
     this.eventEmitter.emit(LocalEvents.LAWYER_VERIFICATION_STATUS_CHANGED, {
       lawyerId,
       status: verificationData.action,
@@ -484,7 +475,6 @@ export class LawyerProfileService {
       throw new NotFoundException('Lawyer profile not found');
     }
 
-    // Validate all practice area IDs exist
     const practiceAreas =
       await this.practiceAreaRepository.findByIds(practiceAreaIds);
 
@@ -496,7 +486,6 @@ export class LawyerProfileService {
       );
     }
 
-    // Update lawyer's practice areas
     lawyerProfile.practiceAreaEntities = practiceAreas;
     lawyerProfile.practiceAreas = practiceAreaIds;
 
@@ -507,7 +496,6 @@ export class LawyerProfileService {
       `Practice areas assigned to lawyer ${lawyerId}: ${practiceAreaIds.join(', ')}`,
     );
 
-    // Emit event for practice area assignment
     this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
       lawyerId,
       practiceAreaIds,
@@ -536,7 +524,6 @@ export class LawyerProfileService {
       throw new NotFoundException('Practice area not found');
     }
 
-    // Remove practice area from lawyer
     lawyerProfile.practiceAreaEntities =
       lawyerProfile.practiceAreaEntities?.filter(
         (pa) => pa.id !== practiceAreaId,
@@ -551,7 +538,6 @@ export class LawyerProfileService {
       `Practice area ${practiceAreaId} removed from lawyer ${lawyerId}`,
     );
 
-    // Emit event for practice area removal
     this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
       lawyerId,
       practiceAreaIds:
@@ -573,7 +559,6 @@ export class LawyerProfileService {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Check if lawyer exists
     const lawyerProfile = await this.lawyerProfileRepository.findOne({
       where: { id: lawyerId },
     });
@@ -583,7 +568,6 @@ export class LawyerProfileService {
       return { isValid: false, errors, warnings };
     }
 
-    // Check if practice areas exist and are active
     const practiceAreas =
       await this.practiceAreaRepository.findByIds(practiceAreaIds);
 
@@ -593,7 +577,6 @@ export class LawyerProfileService {
       errors.push(`Practice areas not found: ${missingIds.join(', ')}`);
     }
 
-    // Check for inactive practice areas
     const inactiveAreas = practiceAreas.filter((pa) => !pa.isActive);
     if (inactiveAreas.length > 0) {
       warnings.push(

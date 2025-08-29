@@ -70,7 +70,6 @@ export class LawyerProfileController {
     @Param('id') id: string,
     @GetSession() session: SessionData,
   ) {
-    // Ensure lawyer can only access their own profile
     if (session.userId !== id) {
       throw new Error('You can only access your own profile');
     }
@@ -91,7 +90,6 @@ export class LawyerProfileController {
     @Body() updateData: UpdateLawyerProfileDto,
     @GetSession() session: SessionData,
   ) {
-    // Ensure lawyer can only update their own profile
     if (session.userId !== id) {
       throw new Error('You can only update your own profile');
     }
@@ -118,7 +116,7 @@ export class LawyerProfileController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }),
           new FileTypeValidator({ fileType: '.(pdf|jpg|jpeg|png)' }),
         ],
       }),
@@ -126,7 +124,6 @@ export class LawyerProfileController {
     file: any,
     @GetSession() session: SessionData,
   ) {
-    // Ensure lawyer can only upload to their own profile
     if (session.userId !== id) {
       throw new Error('You can only upload documents to your own profile');
     }
@@ -149,7 +146,6 @@ export class LawyerProfileController {
     @Param('id') id: string,
     @GetSession() session: SessionData,
   ) {
-    // Ensure lawyer can only access their own documents
     if (session.userId !== id) {
       throw new Error('You can only access your own documents');
     }
@@ -266,7 +262,6 @@ export class LawyerProfileController {
     );
   }
 
-  // Admin endpoints for verification
   @Get('verification/queue')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get verification queue (admin only)' })
@@ -306,7 +301,6 @@ export class LawyerProfileController {
     );
   }
 
-  // Lawyer matching endpoints
   @Get('matching/search')
   @ApiOperation({ summary: 'Search for lawyers for matching' })
   @ApiQuery({ name: 'jurisdiction', description: 'Legal jurisdiction' })
@@ -349,7 +343,6 @@ export class LawyerProfileController {
     );
   }
 
-  // Bulk operations for admin
   @Get('verification/stats')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get verification statistics (admin only)' })
@@ -358,8 +351,6 @@ export class LawyerProfileController {
     description: 'Verification statistics retrieved successfully',
   })
   async getVerificationStats() {
-    // This would return overall verification statistics
-    // Implementation depends on your specific requirements
     return {
       totalPending: 0,
       totalApproved: 0,

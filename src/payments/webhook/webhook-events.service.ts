@@ -68,7 +68,6 @@ export class WebhookEventsService {
     const { reference, status, amount, customer, metadata } = event.data;
 
     try {
-      // Find the payment by reference
       const payment = await this.paymentRepository.findOne({
         where: { providerRef: reference },
         relations: ['caseEntity', 'milestone'],
@@ -79,11 +78,9 @@ export class WebhookEventsService {
         return { processed: false, result: { message: 'Payment not found' } };
       }
 
-      // Update payment status
       payment.status = 'COMPLETED';
       await this.paymentRepository.save(payment);
 
-      // Handle different payment purposes
       if (payment.purpose === 'consultation') {
         return await this.handleConsultationPayment(payment, customer);
       } else if (payment.purpose === 'milestone') {
@@ -92,7 +89,6 @@ export class WebhookEventsService {
         return await this.handleEscrowPayment(payment, customer);
       }
 
-      // Send success notification
       await this.sendPaymentSuccessNotification(payment, customer.email);
 
       return {
@@ -124,7 +120,6 @@ export class WebhookEventsService {
         await this.paymentRepository.save(payment);
       }
 
-      // Send failure notification
       await this.sendPaymentFailureNotification(customer.email, reference);
 
       return {
@@ -163,7 +158,6 @@ export class WebhookEventsService {
 
     this.logger.log(`Transfer failed: ${reference}`);
 
-    // Send failure notification
     await this.sendTransferFailureNotification(customer.email, reference);
 
     return {
@@ -190,7 +184,6 @@ export class WebhookEventsService {
         await this.paymentRepository.save(payment);
       }
 
-      // Send refund notification
       await this.sendRefundNotification(customer.email, reference, amount);
 
       return {
@@ -210,10 +203,8 @@ export class WebhookEventsService {
     payment: any,
     customer: any,
   ): Promise<{ processed: boolean; result: any }> {
-    // For consultation payments, we just need to confirm the payment
     this.logger.log(`Consultation payment confirmed: ${payment.id}`);
 
-    // Send consultation confirmation
     await this.sendConsultationConfirmation(
       customer.email,
       payment.amountMinor,
@@ -232,13 +223,7 @@ export class WebhookEventsService {
     payment: any,
     customer: any,
   ): Promise<{ processed: boolean; result: any }> {
-    // For milestone payments, update milestone status
     if (payment.milestone) {
-      // This functionality is now handled by the MilestonesService,
-      // but the MilestonesService is removed from dependencies.
-      // This part of the logic needs to be re-evaluated or removed
-      // if the intent is to remove MilestonesService entirely.
-      // For now, we'll just log the milestone ID.
       this.logger.log(`Milestone ID for payment: ${payment.milestone.id}`);
     }
 
@@ -255,10 +240,8 @@ export class WebhookEventsService {
     payment: any,
     customer: any,
   ): Promise<{ processed: boolean; result: any }> {
-    // For escrow payments, funds are held until release
     this.logger.log(`Escrow payment confirmed: ${payment.id}`);
 
-    // Send escrow confirmation
     await this.sendEscrowConfirmation(
       customer.email,
       payment.amountMinor,

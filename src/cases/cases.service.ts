@@ -25,7 +25,6 @@ export class CasesService {
 
     const savedCase = await this.caseRepository.save(caseEntity);
 
-    // Emit case created event for notifications
     this.eventEmitter.emit(LocalEvents.CASE_CREATED, {
       userId: clientId,
       slug: 'case-created',

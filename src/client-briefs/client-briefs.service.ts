@@ -47,7 +47,6 @@ export class ClientBriefsService {
 
     const savedBrief = await this.clientBriefRepository.save(clientBrief);
 
-    // Emit brief published event for notifications
     this.eventEmitter.emit(LocalEvents.CLIENT_BRIEF_PUBLISHED, {
       userId: clientId,
       slug: 'brief-published',
@@ -70,10 +69,8 @@ export class ClientBriefsService {
 
     const savedBrief = await this.clientBriefRepository.save(clientBrief);
 
-    // Send notifications
     await this.sendAssignmentNotifications(savedBrief);
 
-    // Emit brief assigned event for notifications
     this.eventEmitter.emit(LocalEvents.CLIENT_BRIEF_ASSIGNED, {
       userId: lawyerId,
       slug: 'brief-assigned',
@@ -236,7 +233,6 @@ export class ClientBriefsService {
 
   private async sendAssignmentNotifications(clientBrief: any) {
     try {
-      // Send notification to assigned lawyer
       if (clientBrief.assignedLawyerId) {
         await this.notificationService.createNotification({
           userId: clientBrief.assignedLawyerId,
@@ -245,7 +241,6 @@ export class ClientBriefsService {
         });
       }
 
-      // Send notification to client
       await this.notificationService.createNotification({
         userId: clientBrief.clientId,
         title: 'Lawyer Assigned',

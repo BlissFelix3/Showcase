@@ -27,7 +27,7 @@ export class Proposal {
   lawyer!: User;
 
   @Column({ type: 'integer' })
-  quotedFeeMinor!: number; // in kobo/cent
+  quotedFeeMinor!: number;
 
   @Column({ type: 'text', default: 'SUBMITTED' })
   status!: ProposalStatus;

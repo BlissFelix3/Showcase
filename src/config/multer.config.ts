@@ -7,13 +7,11 @@ export const multerConfig: MulterOptions = {
   storage: diskStorage({
     destination: './uploads/verification-documents',
     filename: (req, file, callback) => {
-      // Generate unique filename with original extension
       const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
       callback(null, uniqueName);
     },
   }),
   fileFilter: (req, file, callback) => {
-    // Allow only specific file types
     const allowedMimeTypes = [
       'application/pdf',
       'image/jpeg',
@@ -33,8 +31,8 @@ export const multerConfig: MulterOptions = {
     }
   },
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
-    files: 1, // Only allow 1 file per request
+    fileSize: 10 * 1024 * 1024,
+    files: 1,
   },
 };
 
@@ -42,13 +40,11 @@ export const multerConfigForMultipleFiles: MulterOptions = {
   storage: diskStorage({
     destination: './uploads/verification-documents',
     filename: (req, file, callback) => {
-      // Generate unique filename with original extension
       const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
       callback(null, uniqueName);
     },
   }),
   fileFilter: (req, file, callback) => {
-    // Allow only specific file types
     const allowedMimeTypes = [
       'application/pdf',
       'image/jpeg',
@@ -68,7 +64,7 @@ export const multerConfigForMultipleFiles: MulterOptions = {
     }
   },
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
-    files: 5, // Allow up to 5 files per request
+    fileSize: 10 * 1024 * 1024,
+    files: 5,
   },
 };

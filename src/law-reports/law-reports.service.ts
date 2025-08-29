@@ -24,7 +24,6 @@ export class LawReportsService {
   ) {
     const queryBuilder = this.lawReportRepository.createQueryBuilder('report');
 
-    // Basic text search
     if (query) {
       queryBuilder.where(
         '(report.title ILIKE :query OR report.summary ILIKE :query OR report.citation ILIKE :query)',
@@ -32,7 +31,6 @@ export class LawReportsService {
       );
     }
 
-    // Apply filters
     if (filters?.category) {
       queryBuilder.andWhere('report.category = :category', {
         category: filters.category,

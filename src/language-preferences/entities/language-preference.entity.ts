@@ -50,19 +50,19 @@ export class LanguagePreference {
   receiveNotificationsInSecondary: boolean;
 
   @Column({ type: 'text', nullable: true })
-  customTranslations: any; // User-specific translations
+  customTranslations: any;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  region: string; // e.g., 'NG', 'US', 'UK'
+  region: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   timezone: string;
 
   @Column({ type: 'boolean', default: false })
-  autoTranslate: boolean; // Whether to auto-translate content
+  autoTranslate: boolean;
 
   @Column({ type: 'varchar', length: 50, default: 'en' })
-  interfaceLanguage: LanguageCode; // UI language preference
+  interfaceLanguage: LanguageCode;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })

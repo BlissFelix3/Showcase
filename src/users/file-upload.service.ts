@@ -48,13 +48,10 @@ export class FileUploadService {
 
   async processUploadedFile(file: UploadedFile): Promise<FileMetadata> {
     try {
-      // Validate file
       this.validateFile(file);
 
-      // Generate file URL
       const fileUrl = this.generateFileUrl(file.filename);
 
-      // Create metadata
       const metadata: FileMetadata = {
         originalName: file.originalname,
         fileName: file.filename,
@@ -74,7 +71,6 @@ export class FileUploadService {
   }
 
   private validateFile(file: UploadedFile): void {
-    // Check file size (10MB limit)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new BadRequestException(
@@ -82,7 +78,6 @@ export class FileUploadService {
       );
     }
 
-    // Check file type
     const allowedMimeTypes = [
       'application/pdf',
       'image/jpeg',
@@ -114,7 +109,6 @@ export class FileUploadService {
       }
     } catch (error) {
       this.logger.error(`Error deleting file ${filename}:`, error);
-      // Don't throw error for file deletion failures
     }
   }
 
@@ -158,7 +152,7 @@ export class FileUploadService {
     try {
       const files = fs.readdirSync(this.uploadsDir);
       const now = new Date();
-      const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+      const maxAge = 24 * 60 * 60 * 1000;
 
       for (const file of files) {
         const filePath = path.join(this.uploadsDir, file);
@@ -166,9 +160,6 @@ export class FileUploadService {
         const age = now.getTime() - stats.mtime.getTime();
 
         if (age > maxAge) {
-          // Check if file is referenced in database
-          // This would require database integration
-          // For now, we'll just log it
           this.logger.log(`Potential orphaned file: ${file} (age: ${age}ms)`);
         }
       }

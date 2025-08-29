@@ -36,7 +36,6 @@ export class PracticeAreaAssignmentService {
       throw new NotFoundException('Lawyer profile not found');
     }
 
-    // Validate all practice area IDs exist
     const practiceAreas =
       await this.practiceAreaRepository.findByIds(practiceAreaIds);
 
@@ -48,23 +47,19 @@ export class PracticeAreaAssignmentService {
       );
     }
 
-    // Update lawyer's practice areas
     lawyerProfile.practiceAreaEntities = practiceAreas;
 
-    // Update the legacy practiceAreas array for backward compatibility
     lawyerProfile.practiceAreas = practiceAreaIds;
 
     const updatedProfile =
       await this.lawyerProfileRepository.save(lawyerProfile);
 
-    // Update practice area lawyer counts
     await this.updatePracticeAreaLawyerCounts(practiceAreaIds);
 
     this.logger.log(
       `Practice areas assigned to lawyer ${lawyerProfileId}: ${practiceAreaIds.join(', ')}`,
     );
 
-    // Emit event for practice area assignment
     this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
       lawyerId: lawyerProfileId,
       practiceAreaIds,
@@ -96,27 +91,23 @@ export class PracticeAreaAssignmentService {
       throw new NotFoundException('Practice area not found');
     }
 
-    // Remove practice area from lawyer
     lawyerProfile.practiceAreaEntities =
       lawyerProfile.practiceAreaEntities?.filter(
         (pa) => pa.id !== practiceAreaId,
       ) || [];
 
-    // Update legacy array
     lawyerProfile.practiceAreas =
       lawyerProfile.practiceAreas?.filter((id) => id !== practiceAreaId) || [];
 
     const updatedProfile =
       await this.lawyerProfileRepository.save(lawyerProfile);
 
-    // Update practice area lawyer count
     await this.updatePracticeAreaLawyerCounts([practiceAreaId]);
 
     this.logger.log(
       `Practice area ${practiceAreaId} removed from lawyer ${lawyerProfileId}`,
     );
 
-    // Emit event for practice area removal
     this.eventEmitter.emit(LocalEvents.LAWYER_PRACTICE_AREAS_UPDATED, {
       lawyerId: lawyerProfileId,
       practiceAreaIds:
@@ -309,7 +300,6 @@ export class PracticeAreaAssignmentService {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Check if lawyer exists
     const lawyerProfile = await this.lawyerProfileRepository.findOne({
       where: { id: lawyerProfileId },
     });
@@ -319,7 +309,6 @@ export class PracticeAreaAssignmentService {
       return { isValid: false, errors, warnings };
     }
 
-    // Check if practice areas exist and are active
     const practiceAreas =
       await this.practiceAreaRepository.findByIds(practiceAreaIds);
 
@@ -329,7 +318,6 @@ export class PracticeAreaAssignmentService {
       errors.push(`Practice areas not found: ${missingIds.join(', ')}`);
     }
 
-    // Check for inactive practice areas
     const inactiveAreas = practiceAreas.filter((pa) => !pa.isActive);
     if (inactiveAreas.length > 0) {
       warnings.push(
@@ -339,7 +327,6 @@ export class PracticeAreaAssignmentService {
       );
     }
 
-    // Check for duplicate assignments
     const currentPracticeAreas =
       await this.getLawyerPracticeAreas(lawyerProfileId);
     const currentIds = currentPracticeAreas.map((pa) => pa.id);
@@ -351,7 +338,6 @@ export class PracticeAreaAssignmentService {
       );
     }
 
-    // Check maximum practice areas limit (business rule)
     const maxPracticeAreas = 10;
     if (practiceAreaIds.length > maxPracticeAreas) {
       errors.push(

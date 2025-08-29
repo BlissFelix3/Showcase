@@ -26,7 +26,7 @@ export class Payment {
   caseEntity?: CaseEntity | null;
 
   @Column({ type: 'text' })
-  purpose!: string; // consultation, milestone, full fee
+  purpose!: string;
 
   @Column({ type: 'integer' })
   amountMinor!: number;

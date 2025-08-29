@@ -19,14 +19,11 @@ export class OTPService {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   async generateOTP(phone: string): Promise<string> {
-    // Generate a 6-digit OTP
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Set expiry time (10 minutes from now)
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + this.OTP_EXPIRY_MINUTES);
 
-    // Store OTP data
     const otpData: OTPData = {
       code,
       phone,
@@ -47,36 +44,29 @@ export class OTPService {
       return false;
     }
 
-    // Check if OTP is expired
     if (new Date() > otpData.expiresAt) {
       this.otpStorage.delete(phone);
       return false;
     }
 
-    // Check if OTP is already used
     if (otpData.isUsed) {
       return false;
     }
 
-    // Check if max attempts exceeded
     if (otpData.attempts >= this.MAX_ATTEMPTS) {
       this.otpStorage.delete(phone);
       return false;
     }
 
-    // Increment attempts
     otpData.attempts++;
 
-    // Check if code matches
     if (otpData.code === code) {
-      // Mark as used
       otpData.isUsed = true;
       this.otpStorage.delete(phone);
 
       return true;
     }
 
-    // If max attempts reached, delete OTP
     if (otpData.attempts >= this.MAX_ATTEMPTS) {
       this.otpStorage.delete(phone);
     }
@@ -85,10 +75,8 @@ export class OTPService {
   }
 
   async resendOTP(phone: string): Promise<string> {
-    // Remove existing OTP if any
     this.otpStorage.delete(phone);
 
-    // Generate new OTP
     return this.generateOTP(phone);
   }
 
@@ -126,13 +114,12 @@ export class OTPService {
     }
   }
 
-  // Cleanup expired OTPs every 5 minutes
   startCleanupScheduler(): void {
     setInterval(
       () => {
         this.cleanupExpiredOTPs();
       },
       5 * 60 * 1000,
-    ); // 5 minutes
+    );
   }
 }

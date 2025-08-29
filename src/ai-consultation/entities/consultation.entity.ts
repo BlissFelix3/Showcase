@@ -33,7 +33,7 @@ export class AIConsultation {
   recommendations!: string | null;
 
   @Column({ type: 'text', nullable: true })
-  chosenOption!: string | null; // mediation, litigation, out_of_court
+  chosenOption!: string | null;
 
   @Column({ type: 'text', default: 'PENDING' })
   status!: ConsultationStatus;
@@ -45,7 +45,7 @@ export class AIConsultation {
   language!: string | null;
 
   @Column({ type: 'integer', default: 0 })
-  amountMinor!: number; // Consultation fee
+  amountMinor!: number;
 
   @Column({ type: 'text', nullable: true })
   paymentReference!: string | null;

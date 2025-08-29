@@ -3,12 +3,10 @@ import { DocumentType } from './entities/document.entity';
 import { ConfigService } from '@nestjs/config';
 
 export interface DocumentTemplateData {
-  // Common fields
   date?: string;
   language?: string;
   jurisdiction?: string;
 
-  // Party information
   partyAName?: string;
   partyAAddress?: string;
   partyAEmail?: string;
@@ -23,33 +21,28 @@ export interface DocumentTemplateData {
   partyBIdType?: string;
   partyBIdNumber?: string;
 
-  // Property/Asset information
   propertyDescription?: string;
   propertyAddress?: string;
   propertyType?: string;
   propertySize?: string;
 
-  // Financial terms
   amount?: string;
   currency?: string;
   paymentTerms?: string;
   depositAmount?: string;
 
-  // Legal terms
   duration?: string;
   startDate?: string;
   endDate?: string;
   terms?: string[];
   conditions?: string[];
 
-  // Specific document fields
   reason?: string;
   vacateDate?: string;
   noticePeriod?: string;
   contractType?: string;
   subjectMatter?: string;
 
-  // Custom fields
   [key: string]: any;
 }
 
@@ -76,20 +69,16 @@ export class DocumentGenerationService {
     try {
       this.logger.log(`Generating ${type} document for language: ${language}`);
 
-      // Validate template data
       this.validateTemplateData(type, templateData);
 
-      // Generate document content
       const content = await this.generateDocumentContent(
         type,
         templateData,
         language,
       );
 
-      // Generate file name
       const fileName = this.generateFileName(type, templateData);
 
-      // Create metadata
       const metadata = this.createDocumentMetadata(
         type,
         templateData,

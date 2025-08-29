@@ -44,7 +44,7 @@ export class PracticeArea {
   isActive: boolean;
 
   @Column({ type: 'int', default: 0 })
-  lawyerCount: number; // Number of lawyers practicing in this area
+  lawyerCount: number;
 
   @ManyToMany(() => LawyerProfile)
   @JoinTable({

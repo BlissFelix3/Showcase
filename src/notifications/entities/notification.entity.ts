@@ -34,7 +34,7 @@ export class Notification extends BaseEntity {
   actionUrl?: string;
 
   @Column({ nullable: true })
-  metadata?: string; // JSON string for additional data
+  metadata?: string;
 
   @ManyToOne(() => User, (user) => user.notifications)
   user: User;

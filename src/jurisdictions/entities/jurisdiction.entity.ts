@@ -32,7 +32,7 @@ export class Jurisdiction {
   name: string;
 
   @Column({ type: 'varchar', length: 10, unique: true })
-  code: string; // e.g., 'NG', 'LAG', 'ABJ'
+  code: string;
 
   @Column({ type: 'varchar', length: 50 })
   type: JurisdictionType;
@@ -41,7 +41,7 @@ export class Jurisdiction {
   status: JurisdictionStatus;
 
   @Column({ type: 'uuid', nullable: true })
-  parentId: string; // For hierarchical structure (e.g., City belongs to State)
+  parentId: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   parentName: string;
@@ -62,16 +62,16 @@ export class Jurisdiction {
   longitude: number;
 
   @Column({ type: 'int', default: 0 })
-  lawyerCount: number; // Number of lawyers in this jurisdiction
+  lawyerCount: number;
 
   @Column({ type: 'int', default: 0 })
-  caseCount: number; // Number of cases in this jurisdiction
+  caseCount: number;
 
   @Column({ type: 'json', nullable: true })
-  legalSystem: any; // Legal system specific to this jurisdiction
+  legalSystem: any;
 
   @Column({ type: 'json', nullable: true })
-  courtStructure: any; // Court structure and hierarchy
+  courtStructure: any;
 
   @OneToMany(() => User, (user) => user.jurisdiction)
   users: User[];

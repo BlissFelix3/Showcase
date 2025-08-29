@@ -33,7 +33,6 @@ export class AppealsService {
 
     const savedAppeal = await this.appealRepository.save(appeal);
 
-    // Emit appeal submitted event for notifications
     this.eventEmitter.emit(LocalEvents.APPEAL_SUBMITTED, {
       userId: appellantId,
       slug: 'appeal-submitted',
@@ -70,10 +69,8 @@ export class AppealsService {
 
     const savedAppeal = await this.appealRepository.save(appeal);
 
-    // Send notifications
     await this.sendReviewNotifications(savedAppeal);
 
-    // Emit appeal reviewed event for notifications
     this.eventEmitter.emit(LocalEvents.APPEAL_REVIEWED, {
       userId: appeal.appellantId,
       slug: 'appeal-reviewed',
@@ -166,7 +163,6 @@ export class AppealsService {
 
   private async sendReviewNotifications(appeal: Appeal) {
     try {
-      // Create notification using the available service method
       await this.notificationService.createNotification({
         userId: appeal.appellantId,
         title: 'Appeal Reviewed',

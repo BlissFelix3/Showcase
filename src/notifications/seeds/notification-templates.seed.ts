@@ -1,7 +1,6 @@
 import { NotificationTemplate } from '../entities/notification-template.entity';
 
 export const notificationTemplates: Partial<NotificationTemplate>[] = [
-  // User Management Templates
   {
     slug: 'registration-successful',
     title: 'Welcome to Sulhu!',
@@ -48,7 +47,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // AI Consultation Templates
   {
     slug: 'consultation-created',
     title: 'AI Consultation Created',
@@ -77,7 +75,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Case Management Templates
   {
     slug: 'case-created',
     title: 'New Case Created',
@@ -124,7 +121,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Proposal Templates
   {
     slug: 'proposal-submitted',
     title: 'New Proposal Received',
@@ -153,7 +149,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Milestone Templates
   {
     slug: 'milestone-created',
     title: 'New Milestone Created',
@@ -182,7 +177,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Payment Templates
   {
     slug: 'payment-successful',
     title: 'Payment Successful',
@@ -220,7 +214,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Document Templates
   {
     slug: 'document-generated',
     title: 'Document Generated',
@@ -240,7 +233,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Task Templates
   {
     slug: 'task-assigned',
     title: 'New Task Assigned',
@@ -278,7 +270,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Appointment Templates
   {
     slug: 'appointment-scheduled',
     title: 'Appointment Scheduled',
@@ -316,7 +307,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Rating Templates
   {
     slug: 'rating-received',
     title: 'New Rating Received',
@@ -327,7 +317,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Complaint Templates
   {
     slug: 'complaint-submitted',
     title: 'Complaint Submitted',
@@ -347,7 +336,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Appeal Templates
   {
     slug: 'appeal-submitted',
     title: 'Appeal Submitted',
@@ -367,7 +355,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Subscription Templates
   {
     slug: 'subscription-activated',
     title: 'Subscription Activated',
@@ -387,7 +374,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Client Brief Templates
   {
     slug: 'brief-published',
     title: 'Client Brief Published',
@@ -407,7 +393,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Mediation Templates
   {
     slug: 'mediation-requested',
     title: 'Mediation Requested',
@@ -427,7 +412,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // Chat Templates
   {
     slug: 'new-message',
     title: 'New Message',
@@ -438,7 +422,6 @@ export const notificationTemplates: Partial<NotificationTemplate>[] = [
     language: 'en',
   },
 
-  // System Templates
   {
     slug: 'maintenance-notice',
     title: 'System Maintenance',

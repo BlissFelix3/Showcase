@@ -23,7 +23,6 @@ export class AppointmentsService {
   ) {}
 
   async create(createAppointmentDto: CreateAppointmentDto) {
-    // Check for scheduling conflicts
     const conflictingAppointment = await this.appointmentRepository.findOne({
       where: {
         lawyerId: createAppointmentDto.lawyerId,
@@ -46,10 +45,8 @@ export class AppointmentsService {
 
     const savedAppointment = await this.appointmentRepository.save(appointment);
 
-    // Send notifications
     await this.sendAppointmentNotifications(savedAppointment);
 
-    // Emit appointment scheduled event for notifications
     this.eventEmitter.emit(LocalEvents.APPOINTMENT_SCHEDULED, {
       userId: savedAppointment.clientId,
       slug: 'appointment-scheduled',
@@ -78,7 +75,6 @@ export class AppointmentsService {
     appointment.status = AppointmentStatus.CONFIRMED;
     const savedAppointment = await this.appointmentRepository.save(appointment);
 
-    // Emit appointment confirmed event for notifications
     this.eventEmitter.emit(LocalEvents.APPOINTMENT_CONFIRMED, {
       userId: savedAppointment.clientId,
       slug: 'appointment-confirmed',
@@ -117,7 +113,6 @@ export class AppointmentsService {
     appointment.cancellationReason = reason;
     const savedAppointment = await this.appointmentRepository.save(appointment);
 
-    // Emit appointment cancelled event for notifications
     this.eventEmitter.emit(LocalEvents.APPOINTMENT_CANCELLED, {
       userId: savedAppointment.clientId,
       slug: 'appointment-cancelled',
@@ -188,21 +183,18 @@ export class AppointmentsService {
 
   private async sendAppointmentNotifications(appointment: any) {
     try {
-      // Send notification to lawyer
       await this.notificationService.createNotification({
         userId: appointment.lawyerId,
         title: 'New Appointment Scheduled',
         message: `You have a new appointment scheduled for ${new Date(appointment.scheduledAt).toLocaleDateString()}`,
       });
 
-      // Send notification to client
       await this.notificationService.createNotification({
         userId: appointment.clientId,
         title: 'Appointment Confirmed',
         message: `Your appointment has been scheduled for ${new Date(appointment.scheduledAt).toLocaleDateString()}`,
       });
     } catch (error) {
-      // Log error but don't fail the appointment creation
       console.error('Failed to send appointment notifications:', error);
     }
   }

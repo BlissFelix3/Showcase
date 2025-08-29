@@ -16,7 +16,7 @@ export class DeviceToken extends BaseEntity {
   deviceId?: string;
 
   @Column({ nullable: true })
-  deviceType?: string; // 'ios', 'android', 'web'
+  deviceType?: string;
 
   @Column({ nullable: true })
   appVersion?: string;

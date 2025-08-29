@@ -29,7 +29,6 @@ export class JurisdictionsService {
     legalSystem?: any;
     courtStructure?: any;
   }) {
-    // Check if code already exists
     const existingJurisdiction = await this.jurisdictionRepository.findOne({
       where: { code: data.code },
     });
@@ -107,7 +106,6 @@ export class JurisdictionsService {
       order: { type: 'ASC', name: 'ASC' },
     });
 
-    // Build hierarchical structure
     const hierarchy: any = {};
 
     jurisdictions.forEach((jurisdiction) => {
@@ -142,7 +140,6 @@ export class JurisdictionsService {
     longitude: number,
     radiusKm: number = 50,
   ) {
-    // Calculate distance using Haversine formula
     const jurisdictions = await this.jurisdictionRepository
       .createQueryBuilder('jurisdiction')
       .where('jurisdiction.status = :status', {
@@ -229,7 +226,7 @@ export class JurisdictionsService {
     lat2: number,
     lon2: number,
   ): number {
-    const R = 6371; // Earth's radius in kilometers
+    const R = 6371;
     const dLat = this.deg2rad(lat2 - lat1);
     const dLon = this.deg2rad(lon2 - lon1);
     const a =

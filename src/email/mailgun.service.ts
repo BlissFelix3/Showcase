@@ -25,7 +25,6 @@ export class MailgunService {
         throw new Error('MAILGUN_DOMAIN environment variable is required');
       }
 
-      // Ensure at least one of text or html is provided
       if (!data.text && !data.html) {
         throw new Error('Either text or html content must be provided');
       }
@@ -36,7 +35,6 @@ export class MailgunService {
         subject: data.subject,
       };
 
-      // Add text or html based on what's available
       if (data.text) {
         messageData.text = data.text;
       }

@@ -16,10 +16,10 @@ export class Rating {
   id!: string;
 
   @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
-  rater!: User; // Client who is rating
+  rater!: User;
 
   @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
-  rated!: User; // Lawyer being rated
+  rated!: User;
 
   @ManyToOne(() => CaseEntity, { nullable: true, onDelete: 'SET NULL' })
   caseEntity?: CaseEntity | null;
@@ -28,19 +28,19 @@ export class Rating {
   milestone?: Milestone | null;
 
   @Column({ type: 'integer', default: 0 })
-  overallRating!: number; // 1-5 stars
+  overallRating!: number;
 
   @Column({ type: 'integer', default: 0 })
-  communicationRating!: number; // 1-5 stars
+  communicationRating!: number;
 
   @Column({ type: 'integer', default: 0 })
-  expertiseRating!: number; // 1-5 stars
+  expertiseRating!: number;
 
   @Column({ type: 'integer', default: 0 })
-  professionalismRating!: number; // 1-5 stars
+  professionalismRating!: number;
 
   @Column({ type: 'integer', default: 0 })
-  valueRating!: number; // 1-5 stars
+  valueRating!: number;
 
   @Column({ type: 'text', nullable: true })
   comment!: string | null;

@@ -40,7 +40,6 @@ export class NotificationEvents {
     }
   }
 
-  // User Management Events
   @OnEvent(LocalEvents.USER_REGISTRATION_SUCCESSFUL)
   async handleUserRegistrationSuccessful(payload: any) {
     const { userId, slug } = payload;
@@ -75,7 +74,6 @@ export class NotificationEvents {
     }
   }
 
-  // AI Consultation Events
   @OnEvent(LocalEvents.AI_CONSULTATION_PAYMENT_CONFIRMED)
   async handleConsultationPaymentConfirmed(payload: any) {
     const { userId, slug, consultation } = payload;
@@ -95,7 +93,6 @@ export class NotificationEvents {
     }
   }
 
-  // Case Management Events
   @OnEvent(LocalEvents.CASE_ASSIGNED)
   async handleCaseAssigned(payload: any) {
     const { userId, slug, caseData } = payload;
@@ -115,7 +112,6 @@ export class NotificationEvents {
     }
   }
 
-  // Proposal Events
   @OnEvent(LocalEvents.PROPOSAL_ACCEPTED)
   async handleProposalAccepted(payload: any) {
     const { userId, slug, proposal } = payload;
@@ -135,7 +131,6 @@ export class NotificationEvents {
     }
   }
 
-  // Milestone Events
   @OnEvent(LocalEvents.MILESTONE_COMPLETED)
   async handleMilestoneCompleted(payload: any) {
     const { userId, slug, milestone } = payload;
@@ -155,7 +150,6 @@ export class NotificationEvents {
     }
   }
 
-  // Payment Events
   @OnEvent(LocalEvents.PAYMENT_SUCCESSFUL)
   async handlePaymentSuccessful(payload: any) {
     const { userId, slug, payment } = payload;
@@ -176,7 +170,6 @@ export class NotificationEvents {
     }
   }
 
-  // Document Events
   @OnEvent(LocalEvents.DOCUMENT_GENERATED)
   async handleDocumentGenerated(payload: any) {
     const { userId, slug, document } = payload;
@@ -196,7 +189,6 @@ export class NotificationEvents {
     }
   }
 
-  // Task Events
   @OnEvent(LocalEvents.TASK_ASSIGNED)
   async handleTaskAssigned(payload: any) {
     const { userId, slug, task } = payload;
@@ -217,7 +209,6 @@ export class NotificationEvents {
     }
   }
 
-  // Appointment Events
   @OnEvent(LocalEvents.APPOINTMENT_SCHEDULED)
   async handleAppointmentScheduled(payload: any) {
     const { userId, slug, appointment } = payload;
@@ -238,7 +229,6 @@ export class NotificationEvents {
     }
   }
 
-  // Rating Events
   @OnEvent(LocalEvents.RATING_RECEIVED)
   async handleRatingReceived(payload: any) {
     const { userId, slug, rating } = payload;
@@ -258,7 +248,6 @@ export class NotificationEvents {
     }
   }
 
-  // Complaint Events
   @OnEvent(LocalEvents.COMPLAINT_SUBMITTED)
   async handleComplaintSubmitted(payload: any) {
     const { userId, slug, complaint } = payload;
@@ -278,7 +267,6 @@ export class NotificationEvents {
     }
   }
 
-  // Appeal Events
   @OnEvent(LocalEvents.APPEAL_SUBMITTED)
   async handleAppealSubmitted(payload: any) {
     const { userId, slug, appeal } = payload;
@@ -298,7 +286,6 @@ export class NotificationEvents {
     }
   }
 
-  // Subscription Events
   @OnEvent(LocalEvents.SUBSCRIPTION_ACTIVATED)
   async handleSubscriptionActivated(payload: any) {
     const { userId, slug, subscription } = payload;
@@ -317,7 +304,6 @@ export class NotificationEvents {
     }
   }
 
-  // Client Brief Events
   @OnEvent(LocalEvents.CLIENT_BRIEF_PUBLISHED)
   async handleClientBriefPublished(payload: any) {
     const { userId, slug, brief } = payload;
@@ -337,7 +323,6 @@ export class NotificationEvents {
     }
   }
 
-  // Mediation Events
   @OnEvent(LocalEvents.MEDIATION_REQUESTED)
   async handleMediationRequested(payload: any) {
     const { userId, slug, mediation } = payload;
@@ -356,7 +341,6 @@ export class NotificationEvents {
     }
   }
 
-  // Chat Events
   @OnEvent(LocalEvents.CHAT_MESSAGE_RECEIVED)
   async handleChatMessageReceived(payload: any) {
     const { userId, slug, message } = payload;

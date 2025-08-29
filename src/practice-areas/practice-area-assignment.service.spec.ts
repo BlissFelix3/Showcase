@@ -66,7 +66,6 @@ describe('PracticeAreaAssignmentService', () => {
   });
 
   beforeEach(() => {
-    // Reset all mocks before each test
     jest.clearAllMocks();
   });
 
@@ -154,7 +153,6 @@ describe('PracticeAreaAssignmentService', () => {
 
       const mockPracticeArea = { id: 'pa-1', name: 'Property Law' };
 
-      // Set up mocks for this specific test
       mockLawyerProfileRepository.findOne.mockImplementation((options) => {
         if (options?.where?.id === lawyerId) {
           return Promise.resolve(mockLawyerProfile);
@@ -205,7 +203,6 @@ describe('PracticeAreaAssignmentService', () => {
         practiceAreaEntities: mockPracticeAreas,
       };
 
-      // Clear any previous mocks and set up fresh
       mockLawyerProfileRepository.findOne.mockClear();
       mockLawyerProfileRepository.findOne.mockResolvedValue(mockLawyerProfile);
 

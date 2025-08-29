@@ -100,7 +100,6 @@ export class NotificationService {
 
     let notificationMessage = template.message;
 
-    // Replace template variables with actual data
     if (data.data) {
       Object.entries(data.data).forEach(([key, value]) => {
         const placeholder = new RegExp(`{{${key}}}`, 'g');
@@ -125,7 +124,6 @@ export class NotificationService {
       },
     };
 
-    // Save in-app notification
     await this.notificationRepository.save({
       title: notificationPayload.notification.title,
       message: notificationPayload.notification.body,
@@ -138,7 +136,6 @@ export class NotificationService {
       metadata: data.data ? JSON.stringify(data.data) : undefined,
     });
 
-    // Send push notification if device tokens exist
     if (deviceTokens.length > 0) {
       await this.pushService.sendToToken(deviceTokens, notificationPayload);
     }

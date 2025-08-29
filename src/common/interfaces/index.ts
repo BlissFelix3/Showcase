@@ -1,9 +1,7 @@
-// Document interfaces
 export interface DocumentData {
   [key: string]: string;
 }
 
-// Chat interfaces
 export interface LegalAdvice {
   recommendation: string;
   options: string[];
@@ -12,7 +10,6 @@ export interface LegalAdvice {
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
-// Mediation interfaces
 export interface Mediation {
   id: string;
   caseId: string;
@@ -28,7 +25,6 @@ export interface Mediation {
   updatedAt: Date;
 }
 
-// User interfaces
 export interface AuthenticatedRequest {
   user: {
     userId: string;

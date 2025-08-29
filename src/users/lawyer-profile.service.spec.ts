@@ -308,7 +308,6 @@ describe('LawyerProfileService', () => {
         ...reviewData,
       });
 
-      // Mock the updateLawyerRating method call
       mockLawyerReviewRepository.find.mockResolvedValue([
         { rating: 5 },
         { rating: 4 },

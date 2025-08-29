@@ -33,7 +33,6 @@ export class ProposalsService {
 
     const savedProposal = await this.proposalRepository.save(proposal);
 
-    // Emit proposal submitted event for notifications
     this.eventEmitter.emit(LocalEvents.PROPOSAL_SUBMITTED, {
       userId: lawyerId,
       slug: 'proposal-submitted',
@@ -67,14 +66,12 @@ export class ProposalsService {
       clientId: proposal.caseEntity.client.id,
     });
 
-    // Emit proposal accepted event for notifications
     this.eventEmitter.emit(LocalEvents.PROPOSAL_ACCEPTED, {
       userId: proposal.lawyer.id,
       slug: 'proposal-accepted',
       proposal: saved,
     });
 
-    // Emit case assigned event for notifications
     this.eventEmitter.emit(LocalEvents.CASE_ASSIGNED, {
       userId: proposal.caseEntity.client.id,
       slug: 'case-assigned',

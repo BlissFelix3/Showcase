@@ -51,7 +51,6 @@ export class DummyEscrowProvider implements EscrowProvider {
       clientId?: string;
     },
   ): Promise<{ escrowId: string; status: string }> {
-    // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const escrowId = `escrow_${caseId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -72,7 +71,6 @@ export class DummyEscrowProvider implements EscrowProvider {
     escrowId: string,
     amountMinor?: number,
   ): Promise<{ released: boolean; transactionId?: string }> {
-    // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const escrow = this.escrows.get(escrowId);
@@ -91,7 +89,6 @@ export class DummyEscrowProvider implements EscrowProvider {
       throw new Error('Release amount exceeds escrow balance');
     }
 
-    // Update balance
     escrow.balanceMinor -= releaseAmount;
 
     if (escrow.balanceMinor === 0) {
@@ -108,7 +105,6 @@ export class DummyEscrowProvider implements EscrowProvider {
     amountMinor: number;
     metadata?: Record<string, unknown>;
   }> {
-    // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const escrow = this.escrows.get(escrowId);
@@ -125,7 +121,6 @@ export class DummyEscrowProvider implements EscrowProvider {
   }
 
   async cancelEscrow(escrowId: string): Promise<{ cancelled: boolean }> {
-    // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const escrow = this.escrows.get(escrowId);
@@ -146,7 +141,6 @@ export class DummyEscrowProvider implements EscrowProvider {
   async getEscrowBalance(
     escrowId: string,
   ): Promise<{ balanceMinor: number; currency: string }> {
-    // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const escrow = this.escrows.get(escrowId);
@@ -162,7 +156,6 @@ export class DummyEscrowProvider implements EscrowProvider {
   }
 }
 
-// Real escrow provider implementation (for production)
 export class RealEscrowProvider implements EscrowProvider {
   private readonly apiKey: string;
   private readonly baseUrl: string;
@@ -182,11 +175,8 @@ export class RealEscrowProvider implements EscrowProvider {
       clientId?: string;
     },
   ): Promise<{ escrowId: string; status: string }> {
-    // TODO: Implement real escrow provider API calls
-    // This would integrate with services like Flutterwave, Paystack Business, or other escrow providers
-    await new Promise((resolve) => setTimeout(resolve, 10)); // Simulate async operation
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    // Log parameters for debugging (remove in production)
     console.log(
       `Creating escrow for case: ${caseId}, amount: ${amountMinor}, metadata:`,
       metadata,
@@ -199,10 +189,8 @@ export class RealEscrowProvider implements EscrowProvider {
     escrowId: string,
     amountMinor?: number,
   ): Promise<{ released: boolean; transactionId?: string }> {
-    // TODO: Implement real escrow release
-    await new Promise((resolve) => setTimeout(resolve, 10)); // Simulate async operation
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    // Log parameters for debugging (remove in production)
     console.log(`Releasing escrow: ${escrowId}, amount: ${amountMinor}`);
 
     throw new Error('Real escrow provider not implemented yet');
@@ -213,20 +201,16 @@ export class RealEscrowProvider implements EscrowProvider {
     amountMinor: number;
     metadata?: Record<string, unknown>;
   }> {
-    // TODO: Implement real escrow status check
-    await new Promise((resolve) => setTimeout(resolve, 10)); // Simulate async operation
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    // Log parameters for debugging (remove in production)
     console.log(`Getting escrow status: ${escrowId}`);
 
     throw new Error('Real escrow provider not implemented yet');
   }
 
   async cancelEscrow(escrowId: string): Promise<{ cancelled: boolean }> {
-    // TODO: Implement real escrow cancellation
-    await new Promise((resolve) => setTimeout(resolve, 10)); // Simulate async operation
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    // Log parameters for debugging (remove in production)
     console.log(`Cancelling escrow: ${escrowId}`);
 
     throw new Error('Real escrow provider not implemented yet');
@@ -235,10 +219,8 @@ export class RealEscrowProvider implements EscrowProvider {
   async getEscrowBalance(
     escrowId: string,
   ): Promise<{ balanceMinor: number; currency: string }> {
-    // TODO: Implement real escrow balance check
-    await new Promise((resolve) => setTimeout(resolve, 10)); // Simulate async operation
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    // Log parameters for debugging (remove in production)
     console.log(`Getting escrow balance: ${escrowId}`);
 
     throw new Error('Real escrow provider not implemented yet');

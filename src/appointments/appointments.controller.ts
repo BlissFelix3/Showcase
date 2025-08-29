@@ -40,7 +40,6 @@ export class AppointmentsController {
     @Body() createAppointmentDto: CreateAppointmentDto,
     @GetSession() session: SessionData,
   ) {
-    // Ensure the authenticated user is the client
     if (session.userId !== createAppointmentDto.clientId) {
       throw new BadRequestException(
         'You can only create appointments for yourself',

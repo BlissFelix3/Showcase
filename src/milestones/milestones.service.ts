@@ -27,7 +27,6 @@ export class MilestonesService {
 
     const savedMilestone = await this.milestoneRepository.save(milestone);
 
-    // Emit milestone created event for notifications
     this.eventEmitter.emit(LocalEvents.MILESTONE_CREATED, {
       userId: savedMilestone.caseEntity.client.id,
       slug: 'milestone-created',
@@ -46,7 +45,6 @@ export class MilestonesService {
       throw new NotFoundException('Milestone not found');
     if (amountMinor <= 0) throw new BadRequestException('Invalid amount');
 
-    // Create escrow payment via PaymentsService
     const { escrowId } = await this.paymentsService.createEscrowPayment({
       caseId,
       amountMinor,
@@ -66,7 +64,6 @@ export class MilestonesService {
     });
     if (!milestone) throw new NotFoundException('Milestone not found');
 
-    // Find the associated escrow payment and release it
     const escrowPayment = await this.paymentsService.getEscrowsByCase(
       milestone.caseEntity.id,
     );
@@ -87,7 +84,6 @@ export class MilestonesService {
     milestone.status = 'COMPLETED';
     const savedMilestone = await this.milestoneRepository.save(milestone);
 
-    // Emit milestone completed event for notifications
     this.eventEmitter.emit(LocalEvents.MILESTONE_COMPLETED, {
       userId: milestone.caseEntity.client.id,
       slug: 'milestone-completed',
@@ -106,7 +102,6 @@ export class MilestonesService {
       throw new NotFoundException('Milestone not found');
     }
 
-    // Validate status transition
     const validStatuses: MilestoneStatus[] = [
       'PENDING',
       'IN_PROGRESS',

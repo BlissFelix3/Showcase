@@ -61,7 +61,7 @@ export class Document {
   language!: string | null;
 
   @Column({ type: 'integer', default: 0 })
-  amountMinor!: number; // Document generation fee
+  amountMinor!: number;
 
   @Column({ type: 'text', nullable: true })
   paymentReference!: string | null;

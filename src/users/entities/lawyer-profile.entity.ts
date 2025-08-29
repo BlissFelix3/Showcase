@@ -12,7 +12,6 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { PracticeArea } from '../../practice-areas/entities/practice-area.entity';
-// Forward references to avoid circular dependencies
 
 @Entity({ name: 'lawyer_profiles' })
 export class LawyerProfile {
@@ -42,7 +41,7 @@ export class LawyerProfile {
   nationalIdNumber!: string | null;
 
   @Column('simple-array', { nullable: true })
-  practiceAreas!: string[] | null; // Keep for backward compatibility
+  practiceAreas!: string[] | null;
 
   @ManyToMany(() => PracticeArea)
   @JoinTable({

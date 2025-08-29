@@ -113,7 +113,6 @@ export class LanguagePreferencesService {
   async setInterfaceLanguage(userId: string, language: LanguageCode) {
     const preference = await this.findByUserId(userId);
 
-    // Ensure the language is either primary or secondary
     if (
       preference.primaryLanguage !== language &&
       !preference.secondaryLanguages.includes(language)

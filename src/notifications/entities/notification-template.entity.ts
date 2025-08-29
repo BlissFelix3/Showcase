@@ -26,5 +26,5 @@ export class NotificationTemplate extends BaseEntity {
   language?: string;
 
   @Column({ nullable: true })
-  metadata?: string; // JSON string for additional template data
+  metadata?: string;
 }

@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-// Forward reference to avoid circular dependency
 
 @Entity({ name: 'lawyer_reviews' })
 export class LawyerReview {
@@ -26,7 +25,7 @@ export class LawyerReview {
   lawyerProfile!: any;
 
   @Column({ type: 'int' })
-  rating!: number; // 1-5 stars
+  rating!: number;
 
   @Column({ type: 'text', nullable: true })
   comment!: string | null;
@@ -38,7 +37,7 @@ export class LawyerReview {
   caseOutcome!: string | null;
 
   @Column({ type: 'boolean', default: false })
-  isVerified!: boolean; // Whether this review is from a verified case
+  isVerified!: boolean;
 
   @Column({ type: 'boolean', default: false })
   isAnonymous!: boolean;
@@ -50,7 +49,7 @@ export class LawyerReview {
   lawyerRespondedAt!: Date | null;
 
   @Column({ type: 'boolean', default: false })
-  isHelpful!: boolean; // Whether other users found this review helpful
+  isHelpful!: boolean;
 
   @Column({ type: 'int', default: 0 })
   helpfulCount!: number;

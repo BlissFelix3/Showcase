@@ -80,7 +80,6 @@ export class WebhookController {
     @Req() req: Request,
     @Body() body: PaystackWebhookBody,
   ) {
-    // Validate webhook signature
     const signature = req.headers['x-paystack-signature'] as string;
     if (!signature) {
       throw new BadRequestException('Missing Paystack signature');
@@ -96,7 +95,6 @@ export class WebhookController {
       throw new UnauthorizedException('Invalid Paystack signature');
     }
 
-    // Process the webhook event
     const result = await this.webhookEventsService.processWebhookEvent(
       body as WebhookEvent,
     );
@@ -132,9 +130,6 @@ export class WebhookController {
   @ApiResponse({ status: 200, description: 'Webhook processed successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   escrowWebhook(@Req() req: Request, @Body() body: EscrowWebhookBody) {
-    // TODO: Implement escrow webhook signature validation when escrow provider supports it
-
-    // For now, just log the webhook
     return {
       success: true,
       event: body.event,
